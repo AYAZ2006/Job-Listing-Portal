@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-
+import { useNavigate } from 'react-router-dom';
 export default function Navbar() {
   const [openNav, setOpenNav] = useState(false);
   const [openMenuMobile, setOpenMenuMobile] = useState(false);
-
+  const Navigate = useNavigate();
   const navListMenuItems = [
     { title: "Products", description: "Find the perfect solution for your needs." },
     { title: "About Us", description: "Meet and learn about our dedication" },
@@ -37,9 +37,9 @@ export default function Navbar() {
             </li>
             <li><a href="#" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">About Us</a></li>
             <li><a href="#" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Contact Us</a></li>
+            <li><a href="#" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Contact Us</a></li>
           </ul>
-          <button className="bg-white/20 hover:bg-white/30 text-white px-4 py-1 rounded-full transition">Log In</button>
-          <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded-full transition">Sign In</button>
+          <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded-full transition cursor-pointer" onClick={()=>Navigate('/login')}>Sign In</button>
         </div>
         <button className="lg:hidden text-white text-2xl" onClick={() => setOpenNav(!openNav)}>{openNav ? "✕" : "☰"}</button>
       </div>
