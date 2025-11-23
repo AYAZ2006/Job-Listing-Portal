@@ -3,35 +3,35 @@ import { useNavigate, Link } from "react-router-dom";
 
 export default function CNavbar() {
   const [openNav, setOpenNav] = useState(false);
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const email = localStorage.getItem("user_email");
   const logout = () => {
     localStorage.removeItem("user_type");
     localStorage.removeItem("user_email");
-    Navigate("/candidate-login");
+    navigate("/recruiter-login");
   };
+  const navLinks = [
+    { to: "/post", label: "Post" },
+    { to: "/evaluate", label: "Evaluate" },
+    { to: "/manage", label: "Manage" },
+    { to: "/messages", icon: "/message-square.svg", alt: "Messages" },
+    { to: "/notifications", icon: "/bell.svg", alt: "Notifications" },
+  ];
+
   return (
     <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] backdrop-blur-md bg-white/10 rounded-2xl shadow-lg z-50">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
-        <div className="text-xl font-bold items-start lg:-ml-20 text-white">JobPortal</div>
+        <div className="text-xl font-bold text-white lg:-ml-20">JobPortal</div>
         <div className="hidden lg:block lg:ml-10 relative w-full max-w-sm">
           <input type="text" placeholder="Search jobs..." className="w-full px-4 py-2 rounded-full bg-black text-white focus:outline-none"/>
           <button className="absolute right-2 top-1/2 -translate-y-1/2">🔍</button>
         </div>
         <ul className="hidden lg:flex items-center gap-4">
-          <li><Link to="/home" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Home</Link></li>
-          <li><Link to="/internships" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Internships</Link></li>
-          <li><Link to="/jobs" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Jobs</Link></li>
-          <li>
-            <Link to="/messages" className="flex items-center justify-center py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">
-              <img src="/message-square.svg" alt="Messages" className="w-5 h-5" />
+          {navLinks.map((link) => (
+            <Link key={link.to} to={link.to} className="flex items-center justify-center py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">
+              {link.icon ? <img src={link.icon} alt={link.alt} className="w-5 h-5" /> : link.label}
             </Link>
-          </li>
-          <li>
-            <Link to="/notifications" className="flex items-center justify-center py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">
-              <img src="/bell.svg" alt="Messages" className="w-5 h-5" />
-            </Link>
-          </li>
+          ))}
         </ul>
         <div className="hidden lg:flex items-center gap-6">
           <span className="text-white/90">{email}</span>
@@ -46,11 +46,11 @@ export default function CNavbar() {
             <button className="absolute right-2 top-1/2 -translate-y-1/2">🔍</button>
           </div>
           <div className="flex flex-col gap-2">
-            <Link to="/home" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Home</Link>
-            <Link to="/internships" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Internships</Link>
-            <Link to="/jobs" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Jobs</Link>
-            <Link to="/messages" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Messages</Link>
-            <Link to="/notifications" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Notifications</Link>
+            {navLinks.map((link) => (
+              <Link key={link.to} to={link.to} className="flex items-center justify-center py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">
+                {link.icon ? link.label || <img src={link.icon} alt={link.alt} className="w-5 h-5" /> : link.label}
+              </Link>
+            ))}
           </div>
           <div className="text-white/90">{email}</div>
           <button className="w-full text-center bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition" onClick={logout}>Logout</button>

@@ -20,7 +20,9 @@ export default function CandidateLogin() {
       toast.success(res.data.message);
       localStorage.setItem("user_type", "recruiter");
       localStorage.setItem("user_email", email);
-      navigate("/home");
+      const username = res.data.message.replace("Welcome ", "").replace("!", "");
+      localStorage.setItem("username", username);
+      navigate("/admin");
     } catch (err) {
       toast.error(err.response?.data?.error || "Invalid credentials");
     }

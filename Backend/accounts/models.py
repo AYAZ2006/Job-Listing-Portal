@@ -39,3 +39,50 @@ class EmailOTP(models.Model):
         if not self.valid_until:
             self.valid_until = timezone.now() + timedelta(minutes=10)
         super().save(*args, **kwargs)
+
+class Job(models.Model):
+    FULL_TIME = 'Full Time'
+    PART_TIME = 'Part Time'
+    WORK_TYPE_CHOICES = [(FULL_TIME, 'Full Time'),(PART_TIME, 'Part Time'),]
+    OFFICE = 'Office'
+    REMOTE = 'Remote'
+    HYBRID = 'Hybrid'
+    WORK_MODE_CHOICES = [(OFFICE, 'Office'),(REMOTE, 'Remote'),(HYBRID, 'Hybrid'),]
+    job_title = models.CharField(max_length=200)
+    company_name = models.CharField(max_length=200)
+    company_logo = models.ImageField(upload_to='company_logos/', null=True, blank=True)
+    openings = models.PositiveIntegerField()
+    work_type = models.CharField(max_length=20, choices=WORK_TYPE_CHOICES)
+    work_mode = models.CharField(max_length=20, choices=WORK_MODE_CHOICES)
+    location = models.CharField(max_length=200)
+    job_description = models.TextField()
+    salary_min = models.PositiveIntegerField()
+    salary_max = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(Recruiter,on_delete=models.CASCADE,related_name="jobs",null=True,blank=True)
+    def __str__(self):
+        return f"{self.job_title} at {self.company_name}"
+    
+class Internship(models.Model):
+    FULL_TIME = "Full Time"
+    PART_TIME = "Part Time"
+    WORK_TYPE_CHOICES = [(FULL_TIME, "Full Time"),(PART_TIME, "Part Time"),]
+    OFFICE = "Office"
+    REMOTE = "Remote"
+    HYBRID = "Hybrid"
+    WORK_MODE_CHOICES = [(OFFICE, "Office"),(REMOTE, "Remote"),(HYBRID, "Hybrid"),]
+    internship_title = models.CharField(max_length=200)
+    company_name = models.CharField(max_length=200)
+    duration_months = models.PositiveIntegerField()
+    company_logo = models.ImageField(upload_to="company_logos/", null=True, blank=True)
+    openings = models.PositiveIntegerField()
+    work_type = models.CharField(max_length=20, choices=WORK_TYPE_CHOICES)
+    work_mode = models.CharField(max_length=20, choices=WORK_MODE_CHOICES)
+    location = models.CharField(max_length=200)
+    internship_description = models.TextField()
+    stipend_min = models.PositiveIntegerField()
+    stipend_max = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(Recruiter,on_delete=models.CASCADE,related_name="internships",null=True,blank=True)
+    def __str__(self):
+        return f"{self.internship_title} at {self.company_name}"

@@ -1,10 +1,14 @@
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
+from rest_framework import viewsets
+from rest_framework.parsers import MultiPartParser, FormParser
+from .serializers import JobSerializer, InternshipSerializer
 from django.utils import timezone
-from .models import Candidate, Recruiter, EmailOTP
+from .models import Candidate, Recruiter, EmailOTP, Job, Internship
 from django.conf import settings
 
 class CandidateSendOtpView(APIView):
@@ -105,3 +109,60 @@ class RecruiterLoginView(APIView):
         if recruiter.password != password:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": f"Welcome {recruiter.username}!"}, status=status.HTTP_200_OK)
+
+User = get_user_model()
+class JobViewSet(viewsets.ModelViewSet):
+    queryset = Job.objects.all().order_by('-created_at')
+    serializer_class = JobSerializer
+    parser_classes = [MultiPartParser, FormParser]
+    authentication_classes = []
+    permission_classes = []
+
+    def perform_create(self, serializer):
+        username = self.request.data.get("username")
+        if username:
+            recruiter = Recruiter.objects.get(username=username)
+            serializer.save(created_by=recruiter)
+        else:
+            serializer.save()
+
+
+class InternshipViewSet(viewsets.ModelViewSet):
+    queryset = Internship.objects.all().order_by('-created_at')
+    serializer_class = InternshipSerializer
+    parser_classes = [MultiPartParser, FormParser]
+    authentication_classes = []
+    permission_classes = []
+
+    def perform_create(self, serializer):
+        username = self.request.data.get("username")
+        if username:
+            recruiter = Recruiter.objects.get(username=username)
+            serializer.save(created_by=recruiter)
+        else:
+            serializer.save()
+
+
+class MyJobsView(APIView):
+    permission_classes = []
+    authentication_classes = []
+    def get(self, request):
+        username = request.GET.get("username")
+        if not username:
+            return Response({"error": "username is required"}, status=status.HTTP_400_BAD_REQUEST)
+        qs = Job.objects.filter(created_by__username=username).order_by("-created_at")
+        serializer = JobSerializer(qs, many=True)
+        return Response(serializer.data)
+
+class MyInternshipsView(APIView):
+    permission_classes = []
+    authentication_classes = []
+    def get(self, request):
+        username = request.GET.get("username")
+        if not username:
+            return Response({"error": "username is required"}, status=status.HTTP_400_BAD_REQUEST)
+        qs = Internship.objects.filter(created_by__username=username).order_by("-created_at")
+        serializer = InternshipSerializer(qs, many=True)
+        return Response(serializer.data)
+
+

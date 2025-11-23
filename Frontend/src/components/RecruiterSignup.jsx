@@ -44,7 +44,8 @@ export default function Recruiter() {
       setOpenOtp(false);
       localStorage.setItem("user_type", "recruiter");
       localStorage.setItem("user_email", email);
-      Navigate("/home");
+      localStorage.setItem("username", fname);
+      Navigate("/admin");
     } catch (err) {
       toast.error("Error verifying OTP");
     }

@@ -8,10 +8,10 @@ function Dashboard() {
   const [showCursor2, setShowCursor2] = React.useState(true);
   const [showCursor3, setShowCursor3] = React.useState(true);
   return (
-    <div className="w-screen min-h-screen overflow-hidden bg-[url('/image.png')] bg-center bg-cover text-white">
+    <div className="w-screen min-h-screen overflow-hidden bg-[url('/image.png')] bg-center bg-cover  text-white">
       <Parallax pages={3} className="overflow-y-scroll scrollbar-hidden">
         <ParallaxLayer offset={0} speed={0} className="flex flex-col items-center justify-center h-screen bg-black">
-          <SplittingText text="Your future starts here" type="words" className="text-white/80 text-3xl font-bold" motionVariants={{initial: { opacity: 0, x: 100 },animate: { opacity: 1, x: 0 },transition: { duration: 0.9 },stagger: 0.1,}} inView={true}/>
+          <SplittingText text="Your future starts here" type="words" className="text-white/80 text-3xl mt-160 sm:mt-0 font-bold" motionVariants={{initial: { opacity: 0, x: 100 },animate: { opacity: 1, x: 0 },transition: { duration: 0.9 },stagger: 0.1,}} inView={true}/>
           <h1 className="text-5xl font-extrabold text-white leading-snug max-w-3xl mx-auto text-center space-y-2 mt-5">
             <span className="block text-yellow-400">
               <Typewriter words={["Opportunity is missed by most people"]} loop={1} cursor={showCursor1} cursorStyle="" typeSpeed={70} deleteSpeed={50} delaySpeed={1000} onLoopDone={() => setShowCursor1(false)}/>
