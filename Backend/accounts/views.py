@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import JobSerializer, InternshipSerializer
 from django.utils import timezone
-from .models import Candidate, Recruiter, EmailOTP, Job, Internship
+from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification
 from django.conf import settings
 
 class CandidateSendOtpView(APIView):
@@ -122,10 +122,12 @@ class JobViewSet(viewsets.ModelViewSet):
         username = self.request.data.get("username")
         if username:
             recruiter = Recruiter.objects.get(username=username)
-            serializer.save(created_by=recruiter)
+            job = serializer.save(created_by=recruiter)
         else:
-            serializer.save()
-
+            job = serializer.save()
+        candidates = Candidate.objects.all()
+        for candidate in candidates:
+            Notification.objects.create(candidate=candidate,message=f"New job posted: {job.job_title} at {job.company_name}")
 
 class InternshipViewSet(viewsets.ModelViewSet):
     queryset = Internship.objects.all().order_by('-created_at')
@@ -138,9 +140,12 @@ class InternshipViewSet(viewsets.ModelViewSet):
         username = self.request.data.get("username")
         if username:
             recruiter = Recruiter.objects.get(username=username)
-            serializer.save(created_by=recruiter)
+            internship = serializer.save(created_by=recruiter)
         else:
-            serializer.save()
+            internship = serializer.save()
+        candidates = Candidate.objects.all()
+        for candidate in candidates:
+            Notification.objects.create(candidate=candidate,message=f"New job posted: {internship.job_title} at {internship.company_name}")
 
 
 class MyJobsView(APIView):
@@ -165,4 +170,31 @@ class MyInternshipsView(APIView):
         serializer = InternshipSerializer(qs, many=True)
         return Response(serializer.data)
 
-
+class CandidateNotificationsView(APIView):
+    permission_classes = []
+    authentication_classes = []
+    def get(self, request):
+        email = request.GET.get("email")
+        if not email:
+            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return Response({"error": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
+        notifications = candidate.notifications.order_by('-created_at')
+        data = [
+            {"id": n.id,"message": n.message,"is_read": n.is_read,"created_at": n.created_at} 
+            for n in notifications
+        ]
+        return Response(data, status=status.HTTP_200_OK)
+    
+    def patch(self, request, id):
+        try:
+            notification = Notification.objects.get(id=id)
+        except Notification.DoesNotExist:
+            return Response({"error": "Notification not found"}, status=404)
+        is_read = request.data.get("is_read")
+        if is_read is not None:
+            notification.is_read = is_read
+            notification.save()
+        return Response({"message": "Updated successfully"})

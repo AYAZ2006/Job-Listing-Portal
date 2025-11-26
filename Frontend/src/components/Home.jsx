@@ -46,7 +46,7 @@ function Home() {
               <h1 className="text-white text-sm font-medium">Applications</h1>
             </div>
             <div onClick={() => setActiveTab("saved")} className={`flex items-center gap-3 cursor-pointer transition ${activeTab === "saved" ? "opacity-100" : "opacity-60"}`}>
-              <img src="/heart.svg" className="w-5 h-5" />
+              <img src="/bookmark.svg" className="w-5 h-5" />
               <h1 className="text-white text-sm font-medium">Saved</h1>
             </div>
           </div>

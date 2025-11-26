@@ -86,3 +86,12 @@ class Internship(models.Model):
     created_by = models.ForeignKey(Recruiter,on_delete=models.CASCADE,related_name="internships",null=True,blank=True)
     def __str__(self):
         return f"{self.internship_title} at {self.company_name}"
+
+class Notification(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="notifications")
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.message} for {self.candidate.username}"
+
