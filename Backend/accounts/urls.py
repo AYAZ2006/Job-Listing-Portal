@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import CandidateSendOtpView, CandidateVerifyOtpView, RecruiterSendOtpView, RecruiterVerifyOtpView,CandidateLoginView,RecruiterLoginView,JobViewSet,InternshipViewSet,MyInternshipsView,MyJobsView,CandidateNotificationsView
+from .views import CandidateSendOtpView, CandidateVerifyOtpView, RecruiterSendOtpView, RecruiterVerifyOtpView,CandidateLoginView,RecruiterLoginView,JobViewSet,InternshipViewSet,MyInternshipsView,MyJobsView,CandidateNotificationsView,ToggleFavoriteView,FavoriteListView,ApplyJobView,AppliedJobsView
 job_list = JobViewSet.as_view({'get': 'list','post': 'create'})
 job_detail = JobViewSet.as_view({'get': 'retrieve','put': 'update','patch': 'partial_update','delete': 'destroy'})
 internship_list = InternshipViewSet.as_view({'get': 'list','post': 'create'})
@@ -18,4 +18,8 @@ urlpatterns = [
     path("my-jobs/", MyJobsView.as_view()),
     path("my-internships/", MyInternshipsView.as_view()),
     path("candidate/notifications/<int:id>", CandidateNotificationsView.as_view()),
+    path("favorite/", ToggleFavoriteView.as_view(), name="favorite-toggle"),
+    path("favorite-list/", FavoriteListView.as_view(), name="favorite-toggle"),
+    path("apply-job/", ApplyJobView.as_view(), name="apply-job"),
+    path("applied-jobs/", AppliedJobsView.as_view(), name="applied-jobs"),
 ]

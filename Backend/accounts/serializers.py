@@ -28,3 +28,5 @@ class InternshipSerializer(serializers.ModelSerializer):
         model = Internship
         fields = '__all__'
         read_only_fields = ["created_by"]
+
+

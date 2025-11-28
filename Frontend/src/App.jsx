@@ -14,6 +14,7 @@ import CNavbar from "./components/CNavbar.jsx";
 import Admin from "./components/Admin.jsx";
 import JobDetail from "./components/JobDetail.jsx";
 import ANavbar from "./components/ANavbar.jsx";
+import WatchList from "./components/WatchList.jsx";
 import Footer from "./components/Footer.jsx";
 import InternshipPage from "./components/InternshipPage.jsx";
 import Evaluate from "./components/Evaluate.jsx";
@@ -22,6 +23,7 @@ import Manage from "./components/Manage.jsx";
 import Profile from "./components/Profile.jsx";
 import Applications from "./components/Applications.jsx";
 import Jobs from "./components/Jobs.jsx";
+import Settings from "./components/Settings.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function Layout() {
@@ -34,7 +36,7 @@ function Layout() {
     }
   }, [user, location.pathname]);
   const publicNavbarHideRoutes = ["/login","/signup","/candidate","/recruiter","/candidate-login","/recruiter-login",];
-  const loggedInNavbarRoutes = ["/home","/jobs","/internships","/settings","/applications","/profile","/admin"];
+  const loggedInNavbarRoutes = ["/home","/jobs","/internships","/settings","/applications","/profile","/admin","/watchlist"];
   const showPublicNavbar = publicNavbarHideRoutes.includes(location.pathname);
   const showLoggedInNavbar = loggedInNavbarRoutes.includes(location.pathname) || location.pathname.startsWith("/jobs/");;
   return (
@@ -54,9 +56,11 @@ function Layout() {
         <Route path="/internships" element={<InternshipPage />} />
         <Route path="/post" element={<Post />} />
         <Route path="/jobs" element={<Jobs />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/jobs/:id" element={<JobDetail />} />
         <Route path="/applications" element={<Applications />} />
         <Route path="/evaluate" element={<Evaluate />} />
+        <Route path="/watchlist" element={<WatchList />} />
         <Route path="/manage" element={<Manage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/home" element={<ProtectedRoute allowedRoles={["candidate"]}><Home /></ProtectedRoute>}/>

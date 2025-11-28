@@ -95,3 +95,20 @@ class Notification(models.Model):
     def __str__(self):
         return f"{self.message} for {self.candidate.username}"
 
+class Favorite(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, null=True, blank=True, on_delete=models.CASCADE)
+    internship = models.ForeignKey(Internship, null=True, blank=True, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        unique_together = [("candidate", "job"),("candidate", "internship"),]
+
+
+class Application(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="applications")
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="applications")
+    applied_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        unique_together = ("candidate", "job")
+    def __str__(self):
+        return f"{self.candidate.email} → {self.job.job_title}"

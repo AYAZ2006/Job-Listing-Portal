@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,9 +9,8 @@ from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import JobSerializer, InternshipSerializer
 from django.utils import timezone
-from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification
+from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification,Favorite, Application
 from django.conf import settings
-
 class CandidateSendOtpView(APIView):
     def post(self, request):
         email = request.data.get("email")
@@ -135,7 +135,6 @@ class InternshipViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser]
     authentication_classes = []
     permission_classes = []
-
     def perform_create(self, serializer):
         username = self.request.data.get("username")
         if username:
@@ -145,7 +144,8 @@ class InternshipViewSet(viewsets.ModelViewSet):
             internship = serializer.save()
         candidates = Candidate.objects.all()
         for candidate in candidates:
-            Notification.objects.create(candidate=candidate,message=f"New job posted: {internship.job_title} at {internship.company_name}")
+            Notification.objects.create(candidate=candidate,message=f"New internship posted: {internship.internship_title} at {internship.company_name}")
+
 
 
 class MyJobsView(APIView):
@@ -198,3 +198,99 @@ class CandidateNotificationsView(APIView):
             notification.is_read = is_read
             notification.save()
         return Response({"message": "Updated successfully"})
+
+class ToggleFavoriteView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        job_id = request.data.get("job_id")
+        internship_id = request.data.get("internship_id")
+        if not email:
+            return JsonResponse({"error": "Email is required"}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return JsonResponse({"error": "Candidate not found"}, status=404)
+        if job_id:
+            try:
+                job = Job.objects.get(id=job_id)
+            except Job.DoesNotExist:
+                return JsonResponse({"error": "Job not found"}, status=404)
+            favorite, created = Favorite.objects.get_or_create(candidate=candidate, job=job)
+        elif internship_id:
+            try:
+                internship = Internship.objects.get(id=internship_id)
+            except Internship.DoesNotExist:
+                return JsonResponse({"error": "Internship not found"}, status=404)
+            favorite, created = Favorite.objects.get_or_create(candidate=candidate, internship=internship)
+        else:
+            return JsonResponse({"error": "job_id or internship_id is required"}, status=400)
+        if not created:
+            favorite.delete()
+            return JsonResponse({"favorite": False})
+        return JsonResponse({"favorite": True})
+
+class FavoriteListView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response({"favorite_items": []}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return Response({"favorite_items": []})
+        favorites = Favorite.objects.filter(candidate=candidate)
+        favorite_items = []
+        for fav in favorites:
+            if fav.job:
+                favorite_items.append({"type": "job", "id": fav.job.id})
+            elif fav.internship:
+                favorite_items.append({"type": "internship", "id": fav.internship.id})
+        return Response({"favorite_items": favorite_items})
+
+class ApplyJobView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        job_id = request.data.get("job_id")
+        check_only = request.data.get("check_only", False)
+        if not email or not job_id:
+            return Response({"error": "Email and Job ID are required"}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return Response({"error": "Candidate not found"}, status=404)
+        try:
+            job = Job.objects.get(id=job_id)
+        except Job.DoesNotExist:
+            return Response({"error": "Job not found"}, status=404)
+        if check_only:
+            applied = Application.objects.filter(candidate=candidate, job=job).exists()
+            return Response({"applied": applied})
+        application, created = Application.objects.get_or_create(candidate=candidate,job=job)
+        if not created:
+            return Response({"message": "Already applied", "applied": True})
+        return Response({"message": "Applied successfully", "applied": True})
+
+    def delete(self, request):
+        email = request.data.get("email")
+        job_id = request.data.get("job_id")
+        try:
+            candidate = Candidate.objects.get(email=email)
+            job = Job.objects.get(id=job_id)
+        except:
+            return Response({"error": "Invalid request"}, status=400)
+        Application.objects.filter(candidate=candidate, job=job).delete()
+        return Response({"message": "Withdrawn", "applied": False})
+
+class AppliedJobsView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response({"applied_jobs": []}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return Response({"applied_jobs": []})
+        applications = Application.objects.filter(candidate=candidate)
+        job_ids = [app.job.id for app in applications]
+        return Response({"applied_jobs": job_ids})
+
