@@ -53,7 +53,7 @@ export default function JobDetail() {
             </div>
           </div>
           <div className="flex items-center">
-            <button className="px-6 py-2 rounded-lg font-semibold bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white border border-white/10 shadow cursor-pointer" onClick={applied ? withdrawJob : applyJob}>{applied ? "Withdraw" : "Apply Now"}</button>
+              <button className="px-6 py-2 rounded-lg font-semibold bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white border border-white/10 shadow cursor-pointer" onClick={applied ? withdrawJob : applyJob}>{applied ? "Withdraw" : "Apply Now"}</button>   
           </div>
         </header>
         <section className="border-t border-white/10 pt-4">

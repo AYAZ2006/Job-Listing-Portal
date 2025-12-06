@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import CandidateSendOtpView, CandidateVerifyOtpView, RecruiterSendOtpView, RecruiterVerifyOtpView,CandidateLoginView,RecruiterLoginView,JobViewSet,InternshipViewSet,MyInternshipsView,MyJobsView,CandidateNotificationsView,ToggleFavoriteView,FavoriteListView,ApplyJobView,AppliedJobsView
+from .views import CandidateSendOtpView, CandidateVerifyOtpView, RecruiterSendOtpView, RecruiterVerifyOtpView,CandidateLoginView,RecruiterLoginView,JobViewSet,InternshipViewSet,MyInternshipsView,MyJobsView,CandidateNotificationsView,ToggleFavoriteView,FavoriteListView,ApplyJobView,AppliedJobsView,ContactView,ResumeUploadView,ResumeListView,ResumeDeleteView,ResumeDownloadView,ResumeUpdateView,CandidateProfileView,ChangePasswordView,DeleteAccountView
 job_list = JobViewSet.as_view({'get': 'list','post': 'create'})
 job_detail = JobViewSet.as_view({'get': 'retrieve','put': 'update','patch': 'partial_update','delete': 'destroy'})
 internship_list = InternshipViewSet.as_view({'get': 'list','post': 'create'})
@@ -21,5 +21,14 @@ urlpatterns = [
     path("favorite/", ToggleFavoriteView.as_view(), name="favorite-toggle"),
     path("favorite-list/", FavoriteListView.as_view(), name="favorite-toggle"),
     path("apply-job/", ApplyJobView.as_view(), name="apply-job"),
+    path("contact/", ContactView.as_view(), name="contact"),
+    path("profile/", CandidateProfileView.as_view(), name="profile"),
     path("applied-jobs/", AppliedJobsView.as_view(), name="applied-jobs"),
+    path("upload-resume/", ResumeUploadView.as_view(), name="upload-resume"),
+    path("view-resume/", ResumeListView.as_view(), name="view-resume"),
+    path("<uuid:resume_id>/delete/", ResumeDeleteView.as_view()),
+    path("<uuid:resume_id>/update/", ResumeUpdateView.as_view()),
+    path("<uuid:resume_id>/download/", ResumeDownloadView.as_view()),
+    path('change-password/', ChangePasswordView.as_view()),
+    path('delete-account/', DeleteAccountView.as_view()),
 ]

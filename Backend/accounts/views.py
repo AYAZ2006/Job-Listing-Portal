@@ -2,14 +2,16 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 from rest_framework import status
+from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import JobSerializer, InternshipSerializer
+from .serializers import JobSerializer, InternshipSerializer, ContactSerializer, ResumeUploadSerializer,CandidateProfileSerializer
 from django.utils import timezone
-from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification,Favorite, Application
+from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification,Favorite, Application,ResumeUpload,CandidateProfile
 from django.conf import settings
 class CandidateSendOtpView(APIView):
     def post(self, request):
@@ -78,7 +80,6 @@ class RecruiterVerifyOtpView(APIView):
             defaults={"username": username,"password": password,"mobile_number": mobile_number,"organization_name": organization_name,})
         otp_obj.delete()
         return Response({"message": "OTP verified, recruiter registered successfully"}, status=status.HTTP_200_OK)
-
 
 class CandidateLoginView(APIView):
     def post(self, request):
@@ -294,3 +295,119 @@ class AppliedJobsView(APIView):
         job_ids = [app.job.id for app in applications]
         return Response({"applied_jobs": job_ids})
 
+class ContactView(APIView):
+    def post(self, request):
+        serializer = ContactSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            name = serializer.data['name']
+            email = serializer.data['email']
+            phone = serializer.data['phone']
+            company = serializer.data.get('company', '')
+            message = serializer.data['message']
+            admin_message = f"""
+            New Contact Enquiry:
+            Name: {name}
+            Email: {email}
+            Phone: {phone}
+            Company: {company}
+            Message:
+            {message}
+"""
+            send_mail(subject=f"New Contact Form Submission from {name}",message=admin_message,from_email="hajrasultana7075@gmail.com",recipient_list=["hajrasultana7075@gmail.com"],fail_silently=False,)
+            send_mail(subject="Thanks for contacting us",
+                message=(
+                    "Thank you for reaching out to us.\n\n"
+                    "We've received your message and our team has started reviewing your inquiry. "
+                    "One of our support members will get back to you as soon as possible.\n\n"
+                    "In the meantime, feel free to explore our platform for job listings, internships, "
+                    "and other opportunities tailored to your needs.\n\n"
+                    "Check out https://localhost:5173 while we resolve your request."
+                ),from_email="hajrasultana7075@gmail.com",recipient_list=[email],fail_silently=False,)
+            return Response({"message": "Message received and email sent"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ResumeUploadView(APIView):
+    def post(self, request):
+        serializer = ResumeUploadSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, 201)
+        return Response(serializer.errors, 400)
+
+class ResumeListView(APIView):
+    def get(self, request):
+        email = request.query_params.get("email")
+        if not email:return Response({"error": "Email required"}, 400)
+        resumes = ResumeUpload.objects.filter(email=email).order_by("-uploaded_at")
+        serializer = ResumeUploadSerializer(resumes, many=True)
+        return Response(serializer.data, 200)
+
+class ResumeDeleteView(APIView):
+    def delete(self, request, resume_id):
+        resume = get_object_or_404(ResumeUpload, resume_id=resume_id)
+        resume.delete()
+        return Response({"message": "Resume deleted"}, 200)
+
+class ResumeUpdateView(APIView):
+    def put(self, request, resume_id):
+        resume = get_object_or_404(ResumeUpload, resume_id=resume_id)
+        serializer = ResumeUploadSerializer(resume, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, 200)
+        return Response(serializer.errors, 400)
+
+class ResumeDownloadView(APIView):
+    def get(self, request, resume_id):
+        resume = get_object_or_404(ResumeUpload, resume_id=resume_id)
+        return Response({"download_url": resume.file.url})
+
+class CandidateProfileView(APIView):
+    def get(self, request):
+        email = request.GET.get("email")
+        try:
+            profile = CandidateProfile.objects.get(email=email)
+            serializer = CandidateProfileSerializer(profile)
+            return Response(serializer.data)
+        except CandidateProfile.DoesNotExist:
+            return Response({})
+
+    def post(self, request):
+        email = request.data.get("email")
+        profile, _ = CandidateProfile.objects.get_or_create(email=email)
+        serializer = CandidateProfileSerializer(profile,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+class ChangePasswordView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+        confirm_password = request.data.get("confirm_password")
+        if new_password != confirm_password:
+            return Response({"error": "New passwords do not match"}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return Response({"error": "User not found"}, status=400)
+        if candidate.password != current_password:
+            return Response({"error": "Current password is incorrect"}, status=400)
+        candidate.password = new_password
+        candidate.save()
+        return Response({"message": "Password changed successfully!"}, status=200)
+    
+class DeleteAccountView(APIView):
+    def delete(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response({"error": "Email required"}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+            candidate.delete()
+            return Response({"message": "Account deleted"}, status=200)
+        except Candidate.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)

@@ -4,6 +4,7 @@ import SplittingText from "@/components/ui/shadcn-io/SplittingText.jsx";
 import ScrambledText from "@/components/ui/shadcn-io/scrambled-text/index.jsx";
 import { Typewriter } from "react-simple-typewriter";
 import { useNavigate } from "react-router-dom";
+import Footer from "./Footer";
 import "../index.css";
 function Dashboard() {
   const [showCursor1, setShowCursor1] = React.useState(true);
@@ -12,7 +13,7 @@ function Dashboard() {
   const Navigate = useNavigate();
   return (
     <div className="w-screen min-h-screen overflow-hidden bg-[url('/image.png')] bg-center bg-cover  text-white">
-      <Parallax pages={3} className="overflow-y-scroll scrollbar-hidden">
+      <Parallax pages={4} className="overflow-y-scroll scrollbar-hidden">
         <ParallaxLayer offset={0} speed={0}>
           <div className="relative h-screen w-full overflow-hidden bg-black bg-cover bg-top animate-bgMove" style={{ backgroundImage: "url('/landing-parallax-1.jpg')" }}>
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
@@ -56,7 +57,7 @@ function Dashboard() {
             </div>
           </div>
         </ParallaxLayer>
-        <ParallaxLayer offset={2} speed={0} className="flex flex-col items-center justify-center h-screen bg-[#121212]">
+        <ParallaxLayer offset={2} speed={0} className="flex flex-col items-center justify-center h-screen bg-black">
           <SplittingText text="Your future starts here" type="words" className="text-white/80 text-3xl mt-160 sm:mt-0 font-bold" motionVariants={{initial: { opacity: 0, x: 100 },animate: { opacity: 1, x: 0 },transition: { duration: 0.9 },stagger: 0.1,}} inView={true}/>
           <h1 className="text-5xl font-extrabold text-white leading-snug max-w-3xl mx-auto text-center space-y-2 mt-5">
             <span className="block text-yellow-400">
@@ -70,7 +71,7 @@ function Dashboard() {
             </span>
           </h1>
           <div className="lg:fixed lg:h-10 flex justify-center mt-120">
-            <nav className="flex items-center bg-black backdrop-blur-md rounded-sm shadow text-[0.65rem] tracking-wider uppercase text-gray-200 font-semibold">
+            <nav className="flex items-center bg-gray-900 backdrop-blur-md rounded-sm shadow text-[0.65rem] tracking-wider uppercase text-gray-200 font-semibold">
               <ScrambledText className="text-center inline-block w-20" radius={120} duration={1} speed={0.6} scrambleChars="!@#$%^&*()_+" style={{ color: 'currentColor', fontSize: 'clamp(0.65rem, 1.5vw, 1rem)', fontFamily: 'inherit' }}>Vision</ScrambledText>
               <span className="text-gray-500">/</span>
               <ScrambledText className="text-center inline-block w-20" radius={120} duration={1} speed={0.6} scrambleChars="!@#$%^&*()_+" style={{ color: 'currentColor', fontSize: 'clamp(0.65rem, 1.5vw, 1rem)', fontFamily: 'inherit' }}>Pioneer</ScrambledText>
@@ -79,6 +80,24 @@ function Dashboard() {
               <span className="text-gray-500">/</span>
               <ScrambledText className="text-center inline-block w-20" radius={120} duration={1} speed={0.6} scrambleChars="!@#$%^&*()_+" style={{ color: 'currentColor', fontSize: 'clamp(0.65rem, 1.5vw, 1rem)', fontFamily: 'inherit' }}>Support</ScrambledText>
             </nav>
+          </div>
+        </ParallaxLayer>
+        <ParallaxLayer offset={3} speed={0} className="relative h-screen">
+          <div className="absolute inset-0 bg-[#0A0A0A] z-10"></div>
+          <div className="absolute top-10 w-full overflow-hidden z-20">
+              <div className="animate-marquee whitespace-nowrap flex gap-10 text-white text-xl font-semibold">
+                <span>Google</span>
+                <span>Microsoft</span>
+                <span>Amazon</span>
+                <span>Meta</span>
+                <span>Apple</span>
+                <span>Netflix</span>
+                <span>Adobe</span>
+                <span>Salesforce</span>
+              </div>
+            </div>
+          <div className="absolute bottom-0 w-full z-20">
+            <Footer />
           </div>
         </ParallaxLayer>
       </Parallax>

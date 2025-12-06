@@ -1,39 +1,71 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Briefcase, Users, Building2, ArrowRight } from 'lucide-react';
 import Footer from "./Footer.jsx";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 function Home() {
-  const appliedJobs = [
-    { id: 1, title: "Frontend Developer", company: "Google" },
-    { id: 2, title: "Backend Engineer", company: "Microsoft" },
-    { id: 3, title: "React Developer", company: "Meta" },
-    { id: 4, title: "Junior Engineer", company: "Adobe" },
-  ];
-  const savedJobs = [
-    { id: 5, title: "UI Designer", company: "Dribbble" },
-    { id: 6, title: "Software Intern", company: "Netflix" },
-  ];
   const [activeTab, setActiveTab] = useState("apps");
+  const [appliedJobs, setAppliedJobs] = useState([]);
+  const [savedJobs, setSavedJobs] = useState([]);
   const recentApplications = appliedJobs.slice(-3).reverse();
   const recentSaved = savedJobs.slice(-3).reverse();
-  const internships = [
-    { title: "MERN Stack Developer Internship", company: "Lakhdatar Properties", location: "Raipur", applied: 12, wfh: true },
-    { title: "Business Development Trainee Internship", company: "Datacrew.ai", stipend: "15K/Month", views: 176, active: true },
-    { title: "Mobile App Developer Internship", company: "SkygrowthSolutions", location: "Hyderabad", applied: 6, wfh: true },
-    { title: "Graphic Designer Internship", company: "FOOZ Global LLP", stipend: "Not Disclosed", applied: 2, active: true },
-    { title: "Graphic Designer Internship", company: "FOOZ Global LLP", stipend: "Not Disclosed", applied: 2, active: true },
-    { title: "Graphic Designer Internship", company: "FOOZ Global LLP", stipend: "Not Disclosed", applied: 2, active: true },
-  ];
-  const jobs = [
-    { title: "MERN Stack Developer", company: "Lakhdatar Properties", location: "Raipur", applied: 12, wfh: true },
-    { title: "Business Development Trainee", company: "Datacrew.ai", stipend: "15K/Month", views: 176, active: true },
-    { title: "Mobile App Developer", company: "SkygrowthSolutions", location: "Hyderabad", applied: 6, wfh: true },
-    { title: "Graphic Designer", company: "FOOZ Global LLP", stipend: "Not Disclosed", applied: 2, active: true },
-    { title: "Graphic Designer", company: "FOOZ Global LLP", stipend: "Not Disclosed", applied: 2, active: true },
-    { title: "Graphic Designer", company: "FOOZ Global LLP", stipend: "Not Disclosed", applied: 2, active: true },
-  ];
+  const Navigate = useNavigate();
+  useEffect(() => {
+    const email = localStorage.getItem("user_email") || "";
+    const fetchAppliedJobs = async () => {
+      try {
+        const res = await axios.post("http://127.0.0.1:8000/applied-jobs/", { email });
+        const jobIds = res.data.applied_jobs || [];
+        const jobsRes = await axios.get("http://127.0.0.1:8000/jobs/");
+        const applied = jobsRes.data.filter(job => jobIds.includes(job.id)).map(job => ({ ...job, applied: true }));
+        setAppliedJobs(applied);
+      } catch (err) {
+        console.error("Applied jobs error:", err);
+      }
+    };
+    const fetchSavedJobs = async () => {
+      try {
+        const res = await axios.post("http://127.0.0.1:8000/favorite-list/", { email });
+        const favoriteItems = res.data.favorite_items || [];
+        const jobsRes = await axios.get("http://127.0.0.1:8000/jobs/");
+        const saved = favoriteItems.filter(item => item.type === "job").map(item => jobsRes.data.find(job => job.id === item.id)).filter(Boolean).map(job => ({ ...job, saved: true }));
+        setSavedJobs(saved);
+      } catch (err) {
+        console.error("Saved jobs error:", err);
+      }
+    };
+    fetchAppliedJobs();
+    fetchSavedJobs();
+  }, []);
+  const [internships, setInternships] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const internshipsRef = useRef(null);
   const jobsRef = useRef(null);
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/jobs/");
+        setJobs(res.data);
+      } catch (err) {
+        console.error("Failed to load jobs:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchInternships = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/internships/");
+        setInternships(res.data.map((intern) => ({ ...intern, is_favorite: false })));
+      } catch (err) {
+        toast.error("Failed to load internships");
+      }
+    };
+    fetchJobs();
+    fetchInternships();
+  }, []);
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-[#121212] pt-24">
       <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-10 mb-16 md:px-0 px-4">
@@ -54,7 +86,7 @@ function Home() {
             <div className="bg-[#1C1C1C] border border-gray-700 rounded-lg p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold text-white mb-4">Your Applications</h2>
-                <button className="text-blue-400 text-sm hover:underline cursor-pointer flex items-center gap-1">View All
+                <button className="text-blue-400 text-sm hover:underline cursor-pointer flex items-center gap-1" onClick={()=>Navigate("/applications")}>View All
                   <img src="/arrow-up-right.svg" alt="arrow"/>
                 </button>
               </div>
@@ -62,8 +94,8 @@ function Home() {
                 <div className="flex flex-col gap-3">
                   {recentApplications.map((job) => (
                     <div key={job.id} className="p-4 bg-[#181818] rounded-md border border-[#2A2A2A] flex justify-between">
-                      <h3 className="text-white text-lg font-medium">{job.title}</h3>
-                      <p className="text-gray-400 text-sm">{job.company}</p>
+                      <h3 className="text-white text-lg font-medium">{job.job_title}</h3>
+                      <p className="text-gray-400 text-sm">{job.company_name}</p>
                     </div>
                   ))}
                 </div>
@@ -78,7 +110,7 @@ function Home() {
             <div className="bg-[#1C1C1C] border border-gray-700 rounded-lg p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-semibold text-white mb-4">Your Saved Jobs</h2>
-                <button className="text-blue-400 text-sm hover:underline cursor-pointer flex items-center gap-1">View All
+                <button className="text-blue-400 text-sm hover:underline cursor-pointer flex items-center gap-1" onClick={()=>Navigate("/watchlist")}>View All
                   <img src="/arrow-up-right.svg" alt="arrow"/>
                 </button>
               </div>
@@ -86,8 +118,8 @@ function Home() {
                 <div className="flex flex-col gap-3">
                   {recentSaved.map((job) => (
                     <div key={job.id} className="p-4 bg-[#181818] rounded-md border border-[#2A2A2A] flex justify-between">
-                      <h3 className="text-white text-lg font-medium">{job.title}</h3>
-                      <p className="text-gray-400 text-sm">{job.company}</p>
+                      <h3 className="text-white text-lg font-medium">{job.job_title}</h3>
+                      <p className="text-gray-400 text-sm">{job.company_name}</p>
                     </div>
                   ))}
                 </div>
@@ -104,15 +136,16 @@ function Home() {
         <h2 className="text-3xl font-bold text-white mb-6 md:px-0 px-4">Internship Opportunities</h2>
         <div className="relative">
           <div ref={internshipsRef} className="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-            {internships.map((internship, index) => (
-              <div key={index} className="min-w-[300px] bg-[#1C1C1C] border border-gray-700 rounded-lg p-5 flex flex-col gap-3">
-                <h3 className="text-white font-semibold text-lg">{internship.title}</h3>
-                <p className="text-gray-400 text-sm">{internship.company}</p>
+            {internships.slice(-5).reverse().map((internship) => (
+              <div key={internship.id} className="min-w-[300px] bg-[#1C1C1C] border border-gray-700 rounded-lg p-5 flex flex-col gap-3 cursor-pointer hover:border-blue-500/50 transition">
+                <h3 className="text-white font-semibold text-lg">{internship.internship_title}</h3>
+                <p className="text-gray-400 text-sm">{internship.company_name}</p>
                 {internship.location && <p className="text-gray-400 text-sm">Location: {internship.location}</p>}
-                {internship.stipend && <p className="text-gray-400 text-sm">Stipend: {internship.stipend}</p>}
-                {internship.applied && <p className="text-gray-400 text-sm">{internship.applied} people applied</p>}
-                {internship.wfh !== undefined && <p className="text-gray-400 text-sm">{internship.wfh ? "Work from Home Available" : "On-site"}</p>}
-                {internship.active !== undefined && <p className={`text-sm font-medium ${internship.active ? "text-green-400" : "text-red-400"}`}>{internship.active ? "Active" : "Closed"}</p>}
+                {internship.stipend_min !== undefined && internship.stipend_max !== undefined && (
+                  <p className="text-gray-400 text-sm">Stipend: {internship.stipend_min} - {internship.stipend_max}</p>
+                )}
+                {internship.work_type && <p className="text-gray-400 text-sm">Type: {internship.work_type}</p>}
+                {internship.openings !== undefined && <p className="text-gray-400 text-sm">{internship.openings} openings</p>}
               </div>
             ))}
           </div>
@@ -151,7 +184,7 @@ function Home() {
                 </motion.div>
               ))}
             </div>
-            <motion.button initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.7 }} whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }} whileTap={{ scale: 0.98 }} className="mt-6 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-full flex items-center cursor-pointer gap-2 w-fit text-sm hover:shadow-purple-500/30 transition-all duration-300">Start Your Job Search
+            <motion.button onClick={()=>Navigate('/jobs')} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 1, duration: 0.7 }} whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }} whileTap={{ scale: 0.98 }} className="mt-6 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-full flex items-center cursor-pointer gap-2 w-fit text-sm hover:shadow-purple-500/30 transition-all duration-300">Start Your Job Search
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </div>
@@ -161,15 +194,18 @@ function Home() {
       <div className="w-full max-w-6xl mb-16">
         <h2 className="text-3xl font-bold text-white md:px-0 px-4 mb-6">Job Opportunities</h2>
         <div className="relative">
-          <div ref={jobsRef} className="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-            {jobs.map((job, index) => (
-              <div key={index} className="min-w-[300px] bg-[#1C1C1C] border border-gray-700 rounded-lg p-5 flex flex-col gap-3">
-                <h3 className="text-white font-semibold text-lg">{job.title}</h3>
-                <p className="text-gray-400 text-sm">{job.company}</p>
+          <div ref={jobsRef}  className="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+            {jobs.slice(-5).reverse().map((job) => (
+              <div key={job.id} onClick={() => window.location.href = `/jobs/${job.id}`} className="min-w-[300px] bg-[#1C1C1C] border border-gray-700 rounded-lg p-5 flex flex-col gap-3 cursor-pointer hover:border-blue-500/50 transition">
+                <h3 className="text-white font-semibold text-lg">{job.job_title}</h3>
+                <p className="text-gray-400 text-sm">{job.company_name}</p>
                 {job.location && <p className="text-gray-400 text-sm">Location: {job.location}</p>}
-                {job.stipend && <p className="text-gray-400 text-sm">Stipend: {job.stipend}</p>}
-                {job.applied && <p className="text-gray-400 text-sm">{job.applied} people applied</p>}
-                {job.wfh !== undefined && <p className="text-gray-400 text-sm">{job.wfh ? "Work from Home Available" : "On-site"}</p>}
+                {job.salary_min !== undefined && job.salary_max !== undefined && (
+                  <p className="text-gray-400 text-sm">Salary: {job.salary_min} - {job.salary_max}</p>
+                )}
+                {job.work_type && <p className="text-gray-400 text-sm">Type: {job.work_type}</p>}
+                {job.applied !== undefined && <p className="text-gray-400 text-sm">{job.applied} people applied</p>}
+                {job.created_at && (<p className="text-sm text-gray-400">Posted {Math.floor((new Date() - new Date(job.created_at)) / (1000*60*60*24)) === 0 ? "Today" : Math.floor((new Date() - new Date(job.created_at)) / (1000*60*60*24)) + " days ago"}</p>)}
                 {job.active !== undefined && <p className={`text-sm font-medium ${job.active ? "text-green-400" : "text-red-400"}`}>{job.active ? "Active" : "Closed"}</p>}
               </div>
             ))}

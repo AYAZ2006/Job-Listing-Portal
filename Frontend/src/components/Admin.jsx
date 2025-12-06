@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { Briefcase, Users, Building2, CheckCircle, ClipboardList, MessageSquare, ArrowRight } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import AnalyticsPage from "./AnalyticsPage";
 function Admin() {
   const jobsRef = useRef(null);
   const internshipsRef = useRef(null);
@@ -23,6 +24,7 @@ function Admin() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-start p-6 bg-[#121212] pt-24">
       <div className="w-full max-w-6xl mb-16">
+        <AnalyticsPage />
         <h2 className="text-3xl font-bold text-white mb-6">Recruiter Actions</h2>
         <div className="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4" ref={jobsRef} style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           {recruiterActions.map((action, index) => (

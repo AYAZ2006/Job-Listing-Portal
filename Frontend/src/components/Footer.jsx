@@ -1,33 +1,35 @@
 import React, { Fragment } from "react";
 
 export default function Footer() {
-  const PRODUCTS = [
-    { name: "Drag And Drop", link: "#" },
-    { name: "Visual Studio X", link: "#" },
-    { name: "Easy Content", link: "#" },
+  const Jobs = [
+    { name: "Full-Time Jobs", link: "/jobs" },
+    { name: "Internships", link: "/internships" },
+    { name: "Part-Time Jobs", link: "/jobs" },
+    { name: "Remote Opportunities", link: "/jobs" },
   ];
 
   const RESOURCES = [
-    { name: "Industries and tools", link: "#" },
-    { name: "Use cases", link: "#" },
+    { name: "Career Advice", link: "#" },
+    { name: "Resume Tips", link: "#" },
     { name: "Blog", link: "#" },
-    { name: "Online event", link: "#" },
-    { name: "Nostrud exercitation", link: "#" },
+    { name: "Interview Prep", link: "#" },
+    { name: "Salary Insights", link: "#" },
   ];
 
   const COMPANY = [
-    { name: "Diversity & inclusion", link: "#" },
-    { name: "About us", link: "#" },
-    { name: "Press", link: "#" },
-    { name: "Customer Stories", link: "#" },
-    { name: "Online communities", link: "#" },
+    { name: "About Us", link: "/" },
+    { name: "Our Team", link: "/" },
+    { name: "Press", link: "/" },
+    { name: "Customer Stories", link: "/" },
+    { name: "Diversity & Inclusion", link: "/" },
   ];
 
   const SUPPORT = [
-    { name: "Documentation", link: "#" },
-    { name: "Tutorials & guides", link: "#" },
-    { name: "Webinars", link: "#" },
-    { name: "Open-source", link: "#" },
+    { name: "Help Center", link: "/" },
+    { name: "FAQs", link: "/" },
+    { name: "Webinars", link: "/" },
+    { name: "Open-source", link: "/" },
+    { name: "Contact Us", link: "/contact" },
   ];
 
   const Icons = [
@@ -63,7 +65,7 @@ export default function Footer() {
 
   const ItemsContainer = () => (
     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16">
-      <Item Links={PRODUCTS} title="PRODUCTS" />
+      <Item Links={Jobs} title="JOBS" />
       <Item Links={RESOURCES} title="RESOURCES" />
       <Item Links={COMPANY} title="COMPANY" />
       <Item Links={SUPPORT} title="SUPPORT" />

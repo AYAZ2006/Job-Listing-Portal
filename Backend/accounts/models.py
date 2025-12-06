@@ -1,13 +1,14 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.contrib.auth.hashers import make_password, check_password
 class User(AbstractUser):
     pass
 
 class Candidate(models.Model):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=50)
-    password = models.CharField(max_length=50, blank=True)
+    password = models.CharField(max_length=255)
     mobile_number = models.CharField(max_length=15)
 
     def __str__(self):
@@ -112,3 +113,41 @@ class Application(models.Model):
         unique_together = ("candidate", "job")
     def __str__(self):
         return f"{self.candidate.email} → {self.job.job_title}"
+
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    company = models.CharField(max_length=100, blank=True, null=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.name
+
+
+class ResumeUpload(models.Model):
+    email = models.EmailField()
+    resume_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    file = models.FileField(upload_to="resumes/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.email} - {self.resume_id}"
+
+class CandidateProfile(models.Model):
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=100, blank=True)
+    surname = models.CharField(max_length=100, blank=True)
+    mobile = models.CharField(max_length=20, blank=True)
+    gender = models.CharField(max_length=20, blank=True)
+    course_start = models.IntegerField(null=True, blank=True)
+    course_end = models.IntegerField(null=True, blank=True)
+    category = models.CharField(max_length=50, blank=True)
+    qualification = models.CharField(max_length=200, blank=True)
+    career_status = models.CharField(max_length=50, blank=True)
+    linkedin = models.URLField(blank=True)
+    portfolio = models.URLField(blank=True)
+    about = models.TextField(blank=True)
+    skills = models.JSONField(default=list, blank=True)
+    experiences = models.JSONField(default=list, blank=True)
+    def __str__(self):
+        return self.email

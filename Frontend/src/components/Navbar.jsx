@@ -14,7 +14,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] backdrop-blur-md bg-white/10 rounded-2xl shadow-lg z-50">
+    <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] backdrop-blur-md bg-black/20 rounded-2xl shadow-lg z-50">
       <div className="max-w-7xl mx-auto px-10 py-3 flex justify-between items-center">
         <Link to="/" className="text-xl font-bold text-white lg:ml-[-100px]">Job</Link>
         <div className="hidden lg:block relative w-full max-w-sm">
@@ -23,9 +23,7 @@ export default function Navbar() {
         </div>
         <div className="hidden lg:flex items-center gap-6">
           <ul className="flex items-center gap-4">
-            <li>
-              <Link to="/" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Home</Link>
-            </li>
+            <li><Link to="/" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Home</Link></li>
             <li className="relative group">
               <button className="flex items-center gap-1 py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Resources <span className="ml-1">&#9662;</span></button>
               <div className="absolute top-full left-0 mt-4 bg-white/10 backdrop-blur-md text-white p-4 rounded-2xl shadow-lg grid grid-cols-2 gap-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-max">
@@ -38,8 +36,7 @@ export default function Navbar() {
               </div>
             </li>
             <li><a href="#" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">About Us</a></li>
-            <li><a href="#" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Contact Us</a></li>
-            <li><a href="#" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Contact Us</a></li>
+            <li><a href="/contact" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Contact Us</a></li>
           </ul>
           <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded-full transition cursor-pointer" onClick={()=>Navigate('/login')}>Sign In</button>
         </div>
@@ -64,7 +61,7 @@ export default function Navbar() {
             )}
           </div>
           <Link to="/" className="block py-2 px-4 hover:bg-white/20 rounded-full transition">About Us</Link>
-          <Link to="/" className="block py-2 px-4 hover:bg-white/20 rounded-full transition">Contact Us</Link>
+          <Link to="/contact" className="block py-2 px-4 hover:bg-white/20 rounded-full transition">Contact Us</Link>
           <Link to="/login" className="w-full block text-center bg-white/20 hover:bg-white/30 text-white px-4 py-1 rounded-full transition">Log In</Link>
           <Link to="/signup" className="w-full block text-center bg-blue-600 hover:bg-blue-500 text-white px-4 py-1 rounded-full transition">Sign In</Link>
         </div>

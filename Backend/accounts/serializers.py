@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Job,Internship
+from .models import Job,Internship,Contact,ResumeUpload,CandidateProfile
 
 User = get_user_model()
 
@@ -29,4 +29,19 @@ class InternshipSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ["created_by"]
 
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = ['id', 'name', 'email', 'phone', 'company', 'message']
+
+class ResumeUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResumeUpload
+        fields = ["resume_id", "email", "file", "uploaded_at"]
+        extra_kwargs = {"resume_id": {"read_only": True}}
+
+class CandidateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CandidateProfile
+        fields = "__all__"
 
