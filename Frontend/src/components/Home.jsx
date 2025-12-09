@@ -4,129 +4,132 @@ import { Briefcase, Users, Building2, ArrowRight } from 'lucide-react';
 import Footer from "./Footer.jsx";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 function Home() {
   const [activeTab, setActiveTab] = useState("apps");
-  const [appliedJobs, setAppliedJobs] = useState([]);
+  const [appliedItems, setAppliedItems] = useState([]);
   const [savedJobs, setSavedJobs] = useState([]);
-  const recentApplications = appliedJobs.slice(-3).reverse();
-  const recentSaved = savedJobs.slice(-3).reverse();
   const Navigate = useNavigate();
+  const recentApplications = [...appliedItems].sort((a, b) => new Date(b.applied_at || b.created_at) - new Date(a.applied_at || a.created_at)).slice(0, 3);
+  const recentSaved = savedJobs.slice(-3).reverse();
   useEffect(() => {
     const email = localStorage.getItem("user_email") || "";
-    const fetchAppliedJobs = async () => {
+    if (!email) return;
+    const loadApplied = async () => {
       try {
-        const res = await axios.post("http://127.0.0.1:8000/applied-jobs/", { email });
-        const jobIds = res.data.applied_jobs || [];
-        const jobsRes = await axios.get("http://127.0.0.1:8000/jobs/");
-        const applied = jobsRes.data.filter(job => jobIds.includes(job.id)).map(job => ({ ...job, applied: true }));
-        setAppliedJobs(applied);
+        const jobIdsRes = await axios.post("http://127.0.0.1:8000/applied-jobs/", { email });
+        const allJobs = await axios.get("http://127.0.0.1:8000/jobs/");
+        const appliedJobs = (jobIdsRes.data.applied_jobs || []).map(item => {const job = allJobs.data.find(j => j.id === item.job_id);
+          if (!job) return null;
+          return {...job,type: "job",title: job.job_title,company: job.company_name,status: item.status || "applied",applied_at: item.applied_at || job.created_at};}).filter(Boolean);
+        const internIdsRes = await axios.post("http://127.0.0.1:8000/applied-internships/", { email });
+        const allInternships = await axios.get("http://127.0.0.1:8000/internships/");
+        const appliedInternships = (internIdsRes.data.applied_internships || []).map(item => {const intern = allInternships.data.find(i => i.id === item.internship_id);
+            if (!intern) return null;
+            return {...intern,type: "internship",title: intern.internship_title,company: intern.company_name,status: item.status || "applied",applied_at: item.applied_at || intern.created_at};}).filter(Boolean);
+        setAppliedItems([...appliedJobs, ...appliedInternships]);
       } catch (err) {
-        console.error("Applied jobs error:", err);
+        toast.error("Failed to load applications");
       }
     };
+    loadApplied();
+  }, []);
+  useEffect(() => {
+    const email = localStorage.getItem("user_email") || "";
+    if (!email) return;
     const fetchSavedJobs = async () => {
       try {
-        const res = await axios.post("http://127.0.0.1:8000/favorite-list/", { email });
-        const favoriteItems = res.data.favorite_items || [];
+        const resFavorites = await axios.post("http://127.0.0.1:8000/favorite-list/", { email });
+        const favoriteItems = resFavorites.data.favorite_items || [];
         const jobsRes = await axios.get("http://127.0.0.1:8000/jobs/");
-        const saved = favoriteItems.filter(item => item.type === "job").map(item => jobsRes.data.find(job => job.id === item.id)).filter(Boolean).map(job => ({ ...job, saved: true }));
-        setSavedJobs(saved);
+        const internsRes = await axios.get("http://127.0.0.1:8000/internships/");
+        const savedItems = favoriteItems.map(item => {
+          if (item.type === "job") {const job = jobsRes.data.find(j => j.id === item.id);return job ? { ...job, type: "job", title: job.job_title } : null;}
+          else if (item.type === "internship") {const intern = internsRes.data.find(i => i.id === item.id);return intern ? { ...intern, type: "internship", title: intern.internship_title } : null;}
+          return null;
+        }).filter(Boolean);
+        setSavedJobs(savedItems);
       } catch (err) {
-        console.error("Saved jobs error:", err);
+        toast.error("Failed to load saved items");
       }
     };
-    fetchAppliedJobs();
     fetchSavedJobs();
   }, []);
-  const [internships, setInternships] = useState([]);
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [internships, setInternships] = useState([]);
   const internshipsRef = useRef(null);
   const jobsRef = useRef(null);
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/jobs/");
-        setJobs(res.data);
+        const [jobsRes, internsRes] = await Promise.all([axios.get("http://127.0.0.1:8000/jobs/"),axios.get("http://127.0.0.1:8000/internships/")]);
+        setJobs(jobsRes.data);
+        setInternships(internsRes.data);
       } catch (err) {
-        console.error("Failed to load jobs:", err);
-      } finally {
-        setLoading(false);
+        toast.error("Failed to load listings");
       }
     };
-
-    const fetchInternships = async () => {
-      try {
-        const res = await axios.get("http://127.0.0.1:8000/internships/");
-        setInternships(res.data.map((intern) => ({ ...intern, is_favorite: false })));
-      } catch (err) {
-        toast.error("Failed to load internships");
-      }
-    };
-    fetchJobs();
-    fetchInternships();
+    fetchData();
   }, []);
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-[#121212] pt-24">
       <div className="w-full max-w-5xl flex flex-col lg:flex-row gap-10 mb-16 md:px-0 px-4">
         <div className="flex-1 space-y-6">
           <h1 className="text-4xl font-bold text-white mb-3">My Activity</h1>
-          <p className="text-lg text-gray-300">Take a quick look at your recent actions and continue from where you paused.</p>
+          <p className="text-lg text-gray-300">Your recent applications and saved items.</p>
           <div className="bg-[#1C1C1C] border border-gray-700 rounded-full flex items-center gap-8 p-3 px-6 w-fit">
             <div onClick={() => setActiveTab("apps")} className={`flex items-center gap-3 cursor-pointer transition ${activeTab === "apps" ? "opacity-100" : "opacity-60"}`}>
               <img src="/activity.svg" className="w-6 h-6" />
-              <h1 className="text-white text-sm font-medium">Applications</h1>
+              <span className="text-white text-sm font-medium">Applications</span>
             </div>
             <div onClick={() => setActiveTab("saved")} className={`flex items-center gap-3 cursor-pointer transition ${activeTab === "saved" ? "opacity-100" : "opacity-60"}`}>
               <img src="/bookmark.svg" className="w-5 h-5" />
-              <h1 className="text-white text-sm font-medium">Saved</h1>
+              <span className="text-white text-sm font-medium">Saved</span>
             </div>
           </div>
           {activeTab === "apps" && (
             <div className="bg-[#1C1C1C] border border-gray-700 rounded-lg p-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-semibold text-white mb-4">Your Applications</h2>
-                <button className="text-blue-400 text-sm hover:underline cursor-pointer flex items-center gap-1" onClick={()=>Navigate("/applications")}>View All
-                  <img src="/arrow-up-right.svg" alt="arrow"/>
-                </button>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-semibold text-white">Your Applications</h2>
+                <button onClick={() => Navigate("/applications")} className="text-blue-400 text-sm hover:underline flex items-center gap-1">View All <img src="/arrow-up-right.svg" alt="→" /></button>
               </div>
               {recentApplications.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  {recentApplications.map((job) => (
-                    <div key={job.id} className="p-4 bg-[#181818] rounded-md border border-[#2A2A2A] flex justify-between">
-                      <h3 className="text-white text-lg font-medium">{job.job_title}</h3>
-                      <p className="text-gray-400 text-sm">{job.company_name}</p>
+                <div className="space-y-3">
+                  {recentApplications.map((item) => (
+                    <div key={`${item.type}-${item.id}`} className="p-4 bg-[#181818] rounded-lg border border-[#2A2A2A] flex justify-between items-center">
+                      <div>
+                        <h3 className="text-white font-medium text-lg">{item.title}</h3>
+                        <p className="text-gray-400 text-sm">{item.company}</p>
+                      </div>
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold text-white ${item.status === "applied" ? "bg-gray-600" :item.status === "shortlisted" ? "bg-blue-600" :item.status === "interview" ? "bg-purple-600" :item.status === "offer" ? "bg-green-600" :"bg-red-600"}`}>{item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-5 bg-[#181818] rounded-md border border-[#2A2A2A] text-center">
-                  <p className="text-gray-400 text-sm">You haven't applied for any jobs yet.</p>
-                </div>
+                <div className="text-center py-10 text-gray-500 bg-[#181818] rounded-lg">No applications yet</div>
               )}
             </div>
           )}
           {activeTab === "saved" && (
             <div className="bg-[#1C1C1C] border border-gray-700 rounded-lg p-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-semibold text-white mb-4">Your Saved Jobs</h2>
-                <button className="text-blue-400 text-sm hover:underline cursor-pointer flex items-center gap-1" onClick={()=>Navigate("/watchlist")}>View All
-                  <img src="/arrow-up-right.svg" alt="arrow"/>
-                </button>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-semibold text-white">Saved Items</h2>
+                <button onClick={() => Navigate("/watchlist")} className="text-blue-400 text-sm hover:underline flex items-center gap-1">View All <img src="/arrow-up-right.svg" alt="→" /></button>
               </div>
               {recentSaved.length > 0 ? (
-                <div className="flex flex-col gap-3">
+                <div className="space-y-3">
                   {recentSaved.map((job) => (
-                    <div key={job.id} className="p-4 bg-[#181818] rounded-md border border-[#2A2A2A] flex justify-between">
-                      <h3 className="text-white text-lg font-medium">{job.job_title}</h3>
-                      <p className="text-gray-400 text-sm">{job.company_name}</p>
+                    <div key={job.id} className="p-4 bg-[#181818] rounded-lg border border-[#2A2A2A] flex justify-between items-center">
+                      <div>
+                        <h3 className="text-white font-medium">{job.title || job.job_title || job.internship_title}</h3>
+                        <p className="text-gray-400 text-sm">{job.company_name}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-5 bg-[#181818] rounded-md border border-[#2A2A2A] text-center">
-                  <p className="text-gray-400 text-sm">No saved jobs yet.</p>
-                </div>
+                <div className="text-center py-10 text-gray-500 bg-[#181818] rounded-lg">No saved items</div>
               )}
             </div>
           )}
@@ -137,7 +140,7 @@ function Home() {
         <div className="relative">
           <div ref={internshipsRef} className="flex gap-6 overflow-x-auto scroll-smooth px-2 py-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
             {internships.slice(-5).reverse().map((internship) => (
-              <div key={internship.id} className="min-w-[300px] bg-[#1C1C1C] border border-gray-700 rounded-lg p-5 flex flex-col gap-3 cursor-pointer hover:border-blue-500/50 transition">
+              <div key={internship.id} onClick={() => window.location.href = `/internships/${internship.id}`} className="min-w-[300px] bg-[#1C1C1C] border border-gray-700 rounded-lg p-5 flex flex-col gap-3 cursor-pointer hover:border-blue-500/50 transition">
                 <h3 className="text-white font-semibold text-lg">{internship.internship_title}</h3>
                 <p className="text-gray-400 text-sm">{internship.company_name}</p>
                 {internship.location && <p className="text-gray-400 text-sm">Location: {internship.location}</p>}
@@ -190,7 +193,6 @@ function Home() {
           </div>
         </div>
       </motion.div>
-
       <div className="w-full max-w-6xl mb-16">
         <h2 className="text-3xl font-bold text-white md:px-0 px-4 mb-6">Job Opportunities</h2>
         <div className="relative">

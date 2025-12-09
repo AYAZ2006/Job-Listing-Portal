@@ -8,8 +8,8 @@ ChartJS.register(CategoryScale,LinearScale,BarElement,PointElement,LineElement,T
 export default function AnalyticsPage() {
   const [jobs, setJobs] = useState([]);
   const [internships, setInternships] = useState([]);
-  const [studentsEvaluated] = useState(560);
-  const [draftPosts] = useState(23);
+  const [studentsEvaluated, setStudentsEvaluated] = useState(0);
+  const [draftPosts] = useState(0);
   const [barYear, setBarYear] = useState(new Date().getFullYear());
   const [lineYear, setLineYear] = useState(new Date().getFullYear());
   const [years, setYears] = useState([2025]);
@@ -33,7 +33,17 @@ export default function AnalyticsPage() {
     };
     fetchData();
   }, []);
-
+  useEffect(() => {
+    const fetchEvaluatedCount = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/count/");
+        setStudentsEvaluated(res.data.students_evaluated || 0);
+      } catch (err) {
+        console.error("Failed to fetch evaluated count", err);
+      }
+    };
+    fetchEvaluatedCount();
+  }, []);
   const filterByYear = (items, year) => {
     if (year === "All") return items;
     return items.filter(item => new Date(item.created_at).getFullYear() === Number(year));

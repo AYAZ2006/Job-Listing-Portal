@@ -51,7 +51,14 @@ export default function Footer() {
       ))}
     </ul>
   );
+  const DEVELOPERS = [
+    { name: "Mohammed Ayaz Mohiuddin", role: "Full Stack Developer",linkedin:"https://www.linkedin.com/in/mohammed-ayaz-38ba06289" },
+    { name: "Sujith", role: "Full Stack Developer",linkedin:"https://www.linkedin.com/in/sujith-arike/" },
+  ];
 
+  const SPECIAL_THANKS = [
+    { name: "Omkar Raichur", role: "Contributer & Tester",linkedin:"https://www.linkedin.com/in/omkarraichur/" },
+  ];
   const SocialIcons = ({ Icons }) => (
     <div className="flex justify-center items-center gap-3">
         {Icons.map((icon) => (
@@ -59,6 +66,36 @@ export default function Footer() {
             <img src={icon.icon} alt={icon.name} className={icon.size} />
         </a>
         ))}
+    </div>
+    );
+
+  const CreditsSection = ({ developers, specialThanks }) => (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pb-12 text-gray-400 lg:-translate-x-24">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
+        <div className="flex-1">
+          <h2 className="text-white font-semibold text-lg mb-4">Developers</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {developers.map((dev, idx) => (
+              <div key={idx} className="flex flex-col">
+                <a  href={dev.linkedin}  target="_blank"  rel="noopener noreferrer"  className="font-medium text-white hover:text-teal-400 transition">{dev.name}</a>
+                <span className="italic text-gray-400 text-sm">{dev.role}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex-1">
+          <h2 className="text-white font-semibold text-lg mb-4">Special Thanks</h2>
+          <div className="flex flex-col gap-4">
+            {specialThanks.map((item, idx) => (
+              <a key={idx} href={item.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-teal-400 transition">
+                <p className="hover:text-teal-400 transition font-medium text-white">{item.name}</p>
+                <p className="italic text-gray-400 text-sm">{item.role}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <p className="mt-6 text-gray-500 text-xs text-left">Crafted with care and expertise by a dedicated team of developers.</p>
     </div>
     );
 
@@ -71,7 +108,6 @@ export default function Footer() {
       <Item Links={SUPPORT} title="SUPPORT" />
     </div>
   );
-
   return (
     <footer className="bg-[#0A0A0A] w-full text-white">
       <ItemsContainer />
@@ -80,6 +116,7 @@ export default function Footer() {
         <span>Terms · Privacy Policy</span>
         <SocialIcons Icons={Icons} />
       </div>
+      <CreditsSection developers={DEVELOPERS} specialThanks={SPECIAL_THANKS} />
     </footer>
   );
 }

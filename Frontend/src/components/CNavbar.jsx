@@ -92,7 +92,7 @@ export default function CNavbar() {
               <div className="text-xs opacity-60">{email}</div>
             </div>
           </div>
-          <button className="w-full py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition flex items-center justify-center gap-2 cursor-pointer"><Edit3 size={16}/>Edit</button>
+          <button className="w-full py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition flex items-center justify-center gap-2 cursor-pointer" onClick={()=>navigate('/settings')}><Edit3 size={16}/>Edit</button>
           <hr className="border-white/10"/>
           <div className="flex flex-col text-sm gap-1.5 lg:hidden">
             <Link to="/home" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition">Home</Link>

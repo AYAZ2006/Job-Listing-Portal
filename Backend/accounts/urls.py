@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import CandidateSendOtpView, CandidateVerifyOtpView, RecruiterSendOtpView, RecruiterVerifyOtpView,CandidateLoginView,RecruiterLoginView,JobViewSet,InternshipViewSet,MyInternshipsView,MyJobsView,CandidateNotificationsView,ToggleFavoriteView,FavoriteListView,ApplyJobView,AppliedJobsView,ContactView,ResumeUploadView,ResumeListView,ResumeDeleteView,ResumeDownloadView,ResumeUpdateView,CandidateProfileView,ChangePasswordView,DeleteAccountView
+from .views import CandidateSendOtpView, CandidateVerifyOtpView, RecruiterSendOtpView, RecruiterVerifyOtpView,CandidateLoginView,RecruiterLoginView,JobViewSet,InternshipViewSet,MyInternshipsView,MyJobsView,CandidateNotificationsView,ToggleFavoriteView,FavoriteListView,ApplyJobView,AppliedJobsView,ContactView,ResumeUploadView,ResumeListView,ResumeDeleteView,ResumeDownloadView,ResumeUpdateView,CandidateProfileView,ChangePasswordView,DeleteAccountView,JobApplicantsView,UpdateStatusView,AppliedInternshipsView,ApplyInternshipView,InternshipApplicantsView,EvaluatedCountView
 job_list = JobViewSet.as_view({'get': 'list','post': 'create'})
 job_detail = JobViewSet.as_view({'get': 'retrieve','put': 'update','patch': 'partial_update','delete': 'destroy'})
 internship_list = InternshipViewSet.as_view({'get': 'list','post': 'create'})
@@ -31,4 +31,10 @@ urlpatterns = [
     path("<uuid:resume_id>/download/", ResumeDownloadView.as_view()),
     path('change-password/', ChangePasswordView.as_view()),
     path('delete-account/', DeleteAccountView.as_view()),
+    path('job-applicants/', JobApplicantsView.as_view()),
+    path('internship-applicants/', InternshipApplicantsView.as_view()),
+    path('update-status/', UpdateStatusView.as_view()),
+    path('apply-internship/', ApplyInternshipView.as_view(), name='apply-internship'),
+    path('applied-internships/', AppliedInternshipsView.as_view(), name='applied-internships'),
+    path('count/', EvaluatedCountView.as_view(), name='count'),
 ]

@@ -109,11 +109,27 @@ class Application(models.Model):
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="applications")
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="applications")
     applied_at = models.DateTimeField(auto_now_add=True)
+    profile_snapshot = models.JSONField(default=dict, blank=True)
+    status = models.CharField(max_length=20,default="applied",choices=[("applied", "Applied"),("shortlisted", "Shortlisted"),("interview", "Interview"),("offer", "Offer"),("rejected", "Rejected"),])
     class Meta:
         unique_together = ("candidate", "job")
     def __str__(self):
         return f"{self.candidate.email} → {self.job.job_title}"
 
+class ApplicationInternship(models.Model):
+    candidate = models.ForeignKey(Candidate,on_delete=models.CASCADE,related_name="internship_applications")
+    internship = models.ForeignKey(Internship,on_delete=models.CASCADE,related_name="internship_applications")
+    applied_at = models.DateTimeField(auto_now_add=True)
+    profile_snapshot = models.JSONField(default=dict, blank=True)
+    status = models.CharField(max_length=20,default="applied",choices=[("applied", "Applied"),("shortlisted", "Shortlisted"),("interview", "Interview"),("offer", "Offer"),("rejected", "Rejected"),])
+    class Meta:
+        unique_together = ("candidate", "internship")
+        verbose_name = "Internship Application"
+        verbose_name_plural = "Internship Applications"
+
+    def __str__(self):
+        return f"{self.candidate.email} → {self.internship.internship_title} (Internship)"
+    
 class Contact(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()

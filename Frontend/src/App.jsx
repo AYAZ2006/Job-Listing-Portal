@@ -26,6 +26,7 @@ import Profile from "./components/Profile.jsx";
 import ContactUs from "./components/ContactUs.jsx";
 import Applications from "./components/Applications.jsx";
 import Jobs from "./components/Jobs.jsx";
+import InternshipDetail from "./components/InterviewDetail.jsx";
 import AnalyticsPage from "./components/AnalyticsPage.jsx";
 import Settings from "./components/Settings.jsx";
 import { ToastContainer } from "react-toastify";
@@ -42,7 +43,7 @@ function Layout() {
   const publicNavbarHideRoutes = ["/login","/signup","/candidate","/recruiter","/candidate-login","/recruiter-login",];
   const loggedInNavbarRoutes = ["/home","/jobs","/internships","/settings","/applications","/profile","/admin","/watchlist","/contact"];
   const showPublicNavbar = publicNavbarHideRoutes.includes(location.pathname);
-  const showLoggedInNavbar = loggedInNavbarRoutes.includes(location.pathname) || location.pathname.startsWith("/jobs/");;
+  const showLoggedInNavbar = loggedInNavbarRoutes.includes(location.pathname) || location.pathname.startsWith("/jobs/") || location.pathname.startsWith("/internships/");
   return (
     <>
       {["/admin", "/post", "/evaluate","/manage"].includes(location.pathname) && <ANavbar />}
@@ -64,6 +65,7 @@ function Layout() {
         <Route path="/profile-download" element={<ProfileDownload />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/jobs/:id" element={<JobDetail />} />
+        <Route path="/internships/:id" element={<InternshipDetail />} />
         <Route path="/applications" element={<Applications />} />
         <Route path="/evaluate" element={<Evaluate />} />
         <Route path="/watchlist" element={<WatchList />} />

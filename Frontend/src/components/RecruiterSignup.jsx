@@ -49,7 +49,7 @@ export default function Recruiter() {
       toast.success("OTP Verified Successfully!");
       setOpenOtp(false);
       localStorage.setItem("user_type", "recruiter");
-      localStorage.setItem("user_email", email);
+      localStorage.setItem("recruiter_email", email);
       localStorage.setItem("username", fname);
       Navigate("/admin");
     } catch (err) {

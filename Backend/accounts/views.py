@@ -11,7 +11,7 @@ from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import JobSerializer, InternshipSerializer, ContactSerializer, ResumeUploadSerializer,CandidateProfileSerializer
 from django.utils import timezone
-from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification,Favorite, Application,ResumeUpload,CandidateProfile
+from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification,Favorite, Application,ResumeUpload,CandidateProfile,ApplicationInternship
 from django.conf import settings
 class CandidateSendOtpView(APIView):
     def post(self, request):
@@ -120,9 +120,9 @@ class JobViewSet(viewsets.ModelViewSet):
     permission_classes = []
 
     def perform_create(self, serializer):
-        username = self.request.data.get("username")
-        if username:
-            recruiter = Recruiter.objects.get(username=username)
+        email = self.request.data.get("email")
+        if email:
+            recruiter = Recruiter.objects.get(email=email)
             job = serializer.save(created_by=recruiter)
         else:
             job = serializer.save()
@@ -266,35 +266,49 @@ class ApplyJobView(APIView):
         if check_only:
             applied = Application.objects.filter(candidate=candidate, job=job).exists()
             return Response({"applied": applied})
-        application, created = Application.objects.get_or_create(candidate=candidate,job=job)
+        application, created = Application.objects.get_or_create(candidate=candidate,job=job,defaults={'profile_snapshot': {}})
         if not created:
             return Response({"message": "Already applied", "applied": True})
-        return Response({"message": "Applied successfully", "applied": True})
+        try:
+            profile = CandidateProfile.objects.get(email=email)
+            profile_data = {"name": profile.name,"surname": profile.surname,"mobile": profile.mobile,"gender": profile.gender,"course_start": profile.course_start,"course_end": profile.course_end,"category": profile.category,"qualification": profile.qualification,"career_status": profile.career_status,"linkedin": profile.linkedin,"portfolio": profile.portfolio,"about": profile.about,"skills": profile.skills,"experiences": profile.experiences,"applied_at": timezone.now().isoformat(),}
+        except CandidateProfile.DoesNotExist:
+            profile_data = {"note": "Profile was empty at time of applying"}
+        application.profile_snapshot = profile_data
+        application.save()
+        return Response({"message": "Applied successfully","applied": True})
 
     def delete(self, request):
         email = request.data.get("email")
         job_id = request.data.get("job_id")
+        if not email or not job_id:
+            return Response({"error": "Email and job_id required"}, status=400)
         try:
             candidate = Candidate.objects.get(email=email)
             job = Job.objects.get(id=job_id)
-        except:
+        except (Candidate.DoesNotExist, Job.DoesNotExist):
             return Response({"error": "Invalid request"}, status=400)
-        Application.objects.filter(candidate=candidate, job=job).delete()
-        return Response({"message": "Withdrawn", "applied": False})
-
+        deleted_count, _ = Application.objects.filter(candidate=candidate,job=job).delete()
+        if deleted_count > 0:
+            return Response({"message": "Application withdrawn and removed permanently", "applied": False})
+        else:
+            return Response({"message": "No application found to withdraw"}, status=404)
+        
 class AppliedJobsView(APIView):
     def post(self, request):
         email = request.data.get("email")
         if not email:
-            return Response({"applied_jobs": []}, status=400)
+            return Response({"applied_jobs": []}, status=200)
         try:
             candidate = Candidate.objects.get(email=email)
         except Candidate.DoesNotExist:
-            return Response({"applied_jobs": []})
-        applications = Application.objects.filter(candidate=candidate)
-        job_ids = [app.job.id for app in applications]
-        return Response({"applied_jobs": job_ids})
-
+            return Response({"applied_jobs": []}, status=200)
+        applications = Application.objects.filter(candidate=candidate).select_related('job')
+        applied_jobs = []
+        for app in applications:
+            applied_jobs.append({"job_id": app.job.id,"status": app.status,"applied_at": app.applied_at.isoformat(),"job_title": app.job.job_title,"company_name": app.job.company_name,})
+        return Response({"applied_jobs": applied_jobs}, status=200)
+    
 class ContactView(APIView):
     def post(self, request):
         serializer = ContactSerializer(data=request.data)
@@ -399,7 +413,7 @@ class ChangePasswordView(APIView):
         candidate.password = new_password
         candidate.save()
         return Response({"message": "Password changed successfully!"}, status=200)
-    
+
 class DeleteAccountView(APIView):
     def delete(self, request):
         email = request.data.get("email")
@@ -407,7 +421,138 @@ class DeleteAccountView(APIView):
             return Response({"error": "Email required"}, status=400)
         try:
             candidate = Candidate.objects.get(email=email)
+            CandidateProfile.objects.filter(email=email).delete()
+            Notification.objects.filter(candidate=candidate).delete()
+            Favorite.objects.filter(candidate=candidate).delete()
+            Application.objects.filter(candidate=candidate).delete()
+            ResumeUpload.objects.filter(email=email).delete()
             candidate.delete()
-            return Response({"message": "Account deleted"}, status=200)
+            return Response({"message": "Account and ALL related data deleted permanently"}, status=200)
+
         except Candidate.DoesNotExist:
             return Response({"error": "User not found"}, status=404)
+        except Exception as e:
+            return Response({"error": "Something went wrong"}, status=500)
+
+class JobApplicantsView(APIView):
+    def post(self, request):
+        job_id = request.data.get("job_id")
+        recruiter_email = request.data.get("email")
+        if not job_id or not recruiter_email:
+            return Response({"error": "job_id and email are required"}, status=400)
+        try:
+            job = Job.objects.get(id=job_id, created_by__email=recruiter_email)
+        except Job.DoesNotExist:
+            return Response({"error": "Job not found or you don't own this job"}, status=404)
+        applications = Application.objects.filter(job=job).select_related('candidate').order_by('-applied_at')
+        applicants = []
+        for app in applications:
+            snapshot = app.profile_snapshot
+            applicants.append({"candidate_email": app.candidate.email,"applied_at": app.applied_at.isoformat(),"name": snapshot.get("name", "N/A"),"surname": snapshot.get("surname", ""),"full_name": f"{snapshot.get('name','')} {snapshot.get('surname','')}".strip() or "Name not provided","mobile": snapshot.get("mobile", "N/A"),"gender": snapshot.get("gender", ""),"qualification": snapshot.get("qualification", "N/A"),"linkedin": snapshot.get("linkedin", ""),"portfolio": snapshot.get("portfolio", ""),"about": snapshot.get("about", ""),"skills": snapshot.get("skills", []),"experiences": snapshot.get("experiences", []),"applied_at_formatted": app.applied_at.strftime("%b %d, %Y"),"status": app.status,})
+        return Response({"job_title": job.job_title,"company_name": job.company_name,"total_applicants": len(applicants),"applicants": applicants}, status=200)
+    
+class InternshipApplicantsView(APIView):
+    def post(self, request):
+        internship_id = request.data.get("internship_id")
+        recruiter_email = request.data.get("email")
+        if not internship_id or not recruiter_email:
+            return Response({"error": "internship_id and email are required"}, status=400)
+        try:
+            intern = Internship.objects.get(id=internship_id, created_by__email=recruiter_email)
+        except Internship.DoesNotExist:
+            return Response({"error": "Internship not found or you don't own this internship"}, status=404)
+        applications = ApplicationInternship.objects.filter(internship=intern).select_related('candidate').order_by('-applied_at')
+        applicants = []
+        for app in applications:
+            snapshot = app.profile_snapshot
+            applicants.append({"candidate_email": app.candidate.email,"applied_at": app.applied_at.isoformat(),"name": snapshot.get("name", "N/A"),"surname": snapshot.get("surname", ""),"full_name": f"{snapshot.get('name','')} {snapshot.get('surname','')}".strip() or "Name not provided","mobile": snapshot.get("mobile", "N/A"),"gender": snapshot.get("gender", ""),"qualification": snapshot.get("qualification", "N/A"),"linkedin": snapshot.get("linkedin", ""),"portfolio": snapshot.get("portfolio", ""),"about": snapshot.get("about", ""),"skills": snapshot.get("skills", []),"experiences": snapshot.get("experiences", []),"applied_at_formatted": app.applied_at.strftime("%b %d, %Y"),"status": app.status})
+        return Response({"internship_title": intern.internship_title,"company_name": intern.company_name,"total_applicants": len(applicants),"applicants": applicants}, status=200)
+
+class UpdateStatusView(APIView):
+    def post(self, request):
+        application_id = request.data.get("application_id")
+        new_status = request.data.get("status")
+        recruiter_email = request.data.get("recruiter_email")
+        if not application_id or not new_status or not recruiter_email:
+            return Response({"error": "Missing required fields"}, status=400)
+        try:
+            email, obj_id, app_type = application_id.split("-", 2)
+            if app_type == "job":
+                application = Application.objects.get(candidate__email=email,job_id=obj_id,job__created_by__email=recruiter_email)
+            elif app_type == "internship":
+                application = ApplicationInternship.objects.get(candidate__email=email,internship_id=obj_id,internship__created_by__email=recruiter_email)
+            else:
+                return Response({"error": "Invalid application type"}, status=400)
+            application.status = new_status
+            application.save()
+            return Response({"success": True})
+        except Exception as e:
+            return Response({"error": "Not allowed or invalid application"}, status=400)
+        
+class ApplyInternshipView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        internship_id = request.data.get("internship_id")
+        check_only = request.data.get("check_only", False)
+        if not email or not internship_id:
+            return Response({"error": "Email and Internship ID are required"}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return Response({"error": "Candidate not found"}, status=404)
+        try:
+            internship = Internship.objects.get(id=internship_id)
+        except Internship.DoesNotExist:
+            return Response({"error": "Internship not found"}, status=404)
+        if check_only:
+            applied = ApplicationInternship.objects.filter(candidate=candidate, internship=internship).exists()
+            return Response({"applied": applied})
+        application, created = ApplicationInternship.objects.get_or_create(candidate=candidate,internship=internship,defaults={'profile_snapshot': {}})
+        if not created:
+            return Response({"message": "Already applied", "applied": True})
+        try:
+            profile = CandidateProfile.objects.get(email=email)
+            profile_data = {"name": profile.name,"surname": profile.surname,"mobile": profile.mobile,"gender": profile.gender,"course_start": profile.course_start,"course_end": profile.course_end,"category": profile.category,"qualification": profile.qualification,"career_status": profile.career_status,"linkedin": profile.linkedin,"portfolio": profile.portfolio,"about": profile.about,"skills": profile.skills,"experiences": profile.experiences,"applied_at": timezone.now().isoformat(),}
+        except CandidateProfile.DoesNotExist:
+            profile_data = {"note": "Profile was empty at time of applying"}
+        application.profile_snapshot = profile_data
+        application.save()
+        return Response({"message": "Applied successfully", "applied": True})
+
+    def delete(self, request):
+        email = request.data.get("email")
+        internship_id = request.data.get("internship_id")
+        if not email or not internship_id:
+            return Response({"error": "Email and internship_id required"}, status=400)
+        try:
+            candidate = Candidate.objects.get(email=email)
+            internship = Internship.objects.get(id=internship_id)
+        except (Candidate.DoesNotExist, Internship.DoesNotExist):
+            return Response({"error": "Invalid request"}, status=400)
+        deleted_count, _ = ApplicationInternship.objects.filter(candidate=candidate, internship=internship).delete()
+        if deleted_count > 0:
+            return Response({"message": "Application withdrawn and removed permanently", "applied": False})
+        else:
+            return Response({"message": "No application found to withdraw"}, status=404)
+
+class AppliedInternshipsView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        if not email:
+            return Response({"applied_internships": []}, status=200)
+        try:
+            candidate = Candidate.objects.get(email=email)
+        except Candidate.DoesNotExist:
+            return Response({"applied_internships": []}, status=200)
+        applications = ApplicationInternship.objects.filter(candidate=candidate).select_related('internship')
+        applied_internships = []
+        for app in applications:
+            applied_internships.append({"internship_id": app.internship.id,"status": app.status,"applied_at": app.applied_at.isoformat(),"internship_title": app.internship.internship_title,"company_name": app.internship.company_name,})
+        return Response({"applied_internships": applied_internships}, status=200)
+    
+class EvaluatedCountView(APIView):
+    def get(self, request):
+        jobs_count = Application.objects.count()
+        internships_count = ApplicationInternship.objects.count()
+        total = jobs_count + internships_count
+        return Response({"students_evaluated": total})

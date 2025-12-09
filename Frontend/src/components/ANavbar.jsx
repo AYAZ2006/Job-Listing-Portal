@@ -95,7 +95,7 @@ export default function AdminNavbar() {
             <Link to="/manage" className="flex items-center gap-2 py-2 px-2 hover:bg-white/10 rounded"><FolderCog size={16} /> Manage Listings</Link>
           </div>
           <hr className="border-white/10" />
-          <button onClick={logout} className="w-full py-2 mt-2 bg-red-500 hover:bg-red-600 rounded-lg flex items-center justify-center gap-2 text-sm"><LogOut size={16} /> Logout</button>
+          <button onClick={logout} className="w-full py-2 mt-2 bg-red-500 hover:bg-red-600 rounded-lg flex items-center justify-center gap-2 text-sm cursor-pointer"><LogOut size={16} /> Logout</button>
         </div>
       )}
     </nav>

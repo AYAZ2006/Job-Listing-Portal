@@ -12,25 +12,33 @@ function Meta({ label, value }) {
     </div>
   );
 }
-export default function JobDetail() {
+
+export default function InternshipDetail() {
   const { id } = useParams();
-  const [job, setJob] = useState(null);
+  const [internship, setInternship] = useState(null);
   const profileCompletion = Number(localStorage.getItem("profileCompletion")) || 0;
   const [applied, setApplied] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {axios.get(`http://127.0.0.1:8000/jobs/${id}/`).then((res) => setJob(res.data)).catch((err) => console.error(err));}, [id]);
-  useEffect(() => {axios.post("http://127.0.0.1:8000/apply-job/", {job_id: id,email: localStorage.getItem("user_email"),check_only: true}).then((res) => {setApplied(res.data.applied);}).catch(() => {});}, [id]);
-  if (!job) return <p className="text-center text-gray-400">Loading...</p>;
+  useEffect(() => {axios.get(`http://127.0.0.1:8000/internships/${id}/`)
+      .then((res) => setInternship(res.data))
+      .catch((err) => console.error(err));
+  }, [id]);
+  useEffect(() => {axios.post("http://127.0.0.1:8000/apply-internship/", {internship_id: Number(id),email: localStorage.getItem("user_email"),check_only: true,})
+      .then((res) => setApplied(res.data.applied))
+      .catch(() => {});
+  }, [id]);
+  if (!internship) return <p className="text-center text-gray-400">Loading...</p>;
   function daysAgo(dateString) {
     const posted = new Date(dateString);
     const now = new Date();
     const diff = Math.floor((now - posted) / (1000 * 60 * 60 * 24));
     return diff === 0 ? "Today" : `${diff} days ago`;
   }
+
   const applyJob = () => {
     setLoading(true);
-    axios.post("http://127.0.0.1:8000/apply-job/", {job_id: id,email: localStorage.getItem("user_email"),})
+    axios.post("http://127.0.0.1:8000/apply-internship/", {internship_id: Number(id),email: localStorage.getItem("user_email"),})
       .then(() => {
         toast.success("Applied successfully");
         setApplied(true);
@@ -45,7 +53,7 @@ export default function JobDetail() {
 
   const withdrawJob = () => {
     setLoading(true);
-    axios.delete("http://127.0.0.1:8000/apply-job/", {data: {job_id: id,email: localStorage.getItem("user_email"),},})
+    axios.delete("http://127.0.0.1:8000/apply-internship/", {data: {internship_id: Number(id),email: localStorage.getItem("user_email"),},})
       .then(() => {
         toast.success("Withdrawn successfully");
         setApplied(false);
@@ -70,39 +78,39 @@ export default function JobDetail() {
           <header className="flex justify-between items-center gap-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-xl bg-[linear-gradient(135deg,#1c1c1c,#0f0f0f)] shadow-inner border border-white/5 overflow-hidden">
-                <img src={job.company_logo} alt={job.company_name} className="w-full h-full object-cover rounded-xl"/>
+                <img src={internship.company_logo} alt={internship.company_name} className="w-full h-full object-cover rounded-xl"/>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">{job.job_title}</h1>
-                <p className="text-sm text-gray-400">{job.company_name}</p>
+                <h1 className="text-xl font-bold text-white">{internship.job_title}</h1>
+                <p className="text-sm text-gray-400">{internship.company_name}</p>
               </div>
             </div>
             <div className="flex items-center">
-                <button className="px-6 py-2 rounded-lg font-semibold bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow" onClick={() => {if (profileCompletion < 90) {toast.error(
-                  <div className="flex flex-col gap-2">
-                    <div className="font-bold">Profile Incomplete</div>
-                    <div className="text-sm opacity-90">You need <strong>90%</strong> profile completion to apply.<br />Current: <strong className="text-yellow-300">{profileCompletion}%</strong></div>
-                    <button onClick={() => navigate("/settings")} className="mt-2 px-4 py-1.5 bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white cursor-pointer text-xs font-bold rounded-md hover:bg-gray-200 transition">Complete Profile Now</button>
-                  </div>,
-                  {position: "top-center",autoClose: 7000,closeOnClick: false,});
-                    return;
-                  }
-                applied ? withdrawJob() : applyJob();}}>{applied ? "Withdraw" : "Apply Now"}</button>
+              <button className="px-6 py-2 rounded-lg font-semibold bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow" onClick={() => {
+                  if (profileCompletion < 90) {
+                    toast.error(
+                      <div className="flex flex-col gap-2">
+                        <div className="font-bold">Profile Incomplete</div>
+                        <div className="text-sm opacity-90">You need <strong>90%</strong> profile completion to apply.<br /> Current: <strong className="text-yellow-300">{profileCompletion}%</strong></div>
+                        <button onClick={() => navigate("/settings")} className="mt-2 px-4 py-1.5 bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white cursor-pointer text-xs font-bold rounded-md hover:bg-gray-200 transition">Complete Profile Now</button>
+                      </div>,
+                      { position: "top-center", autoClose: 7000, closeOnClick: false });return;}applied ? withdrawJob() : applyJob();}}>{applied ? "Withdraw" : "Apply Now"}
+              </button>
             </div>
           </header>
           <section className="border-t border-white/10 pt-4">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <Meta label="Openings" value={job.openings} />
-              <Meta label="Work Type" value={job.work_type} />
-              <Meta label="Mode" value={job.work_mode} />
-              <Meta label="Location" value={job.location} />
-              <Meta label="Salary" value={`₹${job.salary_min} - ₹${job.salary_max}`} />
-              <Meta label="Posted" value={daysAgo(job.created_at)} />
+              <Meta label="Openings" value={internship.openings} />
+              <Meta label="Work Type" value={internship.work_type} />
+              <Meta label="Mode" value={internship.work_mode} />
+              <Meta label="Location" value={internship.location} />
+              <Meta label="Stipend" value={internship.stipend_min && internship.stipend_max ? `₹${internship.stipend_min} - ₹${internship.stipend_max}` : "Not disclosed"} />
+              <Meta label="Posted" value={daysAgo(internship.created_at)} />
             </div>
           </section>
           <section className="bg-[linear-gradient(180deg,rgba(20,20,20,0.7),rgba(16,16,16,0.5))] rounded-xl p-4 border border-white/5 max-h-64 overflow-y-auto">
             <h2 className="text-base font-semibold text-white mb-2">About the role</h2>
-            <p className="text-gray-300 leading-relaxed whitespace-pre-line">{job.job_description}</p>
+            <p className="text-gray-300 leading-relaxed whitespace-pre-line">{internship.internship_description ||"No description available"}</p>
           </section>
           <section className="px-1 text-gray-300">
             <h3 className="text-sm font-semibold text-gray-200 mb-2">Why you'll love it</h3>
@@ -113,12 +121,11 @@ export default function JobDetail() {
             </ul>
           </section>
           <footer className="flex justify-between items-center text-gray-400 text-sm border-t border-white/10 pt-3">
-            <div>{job.company_name} • {job.location}</div>
-            <div>Salary ₹{job.salary_min} — ₹{job.salary_max}</div>
+            <div>{internship.company_name} • {internship.location}</div>
+            <div>Stipend ₹{internship.stipend_min} — ₹{internship.stipend_max}</div>
           </footer>
         </div>
       </div>
     </>
   );
 }
-
