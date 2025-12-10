@@ -37,4 +37,5 @@ urlpatterns = [
     path('apply-internship/', ApplyInternshipView.as_view(), name='apply-internship'),
     path('applied-internships/', AppliedInternshipsView.as_view(), name='applied-internships'),
     path('count/', EvaluatedCountView.as_view(), name='count'),
+    path("delete-job/<int:pk>/", job_detail,name="job-delete"),
 ]

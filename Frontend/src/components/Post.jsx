@@ -57,7 +57,7 @@ function Post() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <HashLoader color="#36d7b7" size={80} />
         </div>
-      )}
+        )}
         <div className="min-h-screen flex flex-col items-center justify-start p-6 bg-[#121212] pt-24">
         <div className="bg-white/10 border border-white/15 backdrop-blur-xl rounded-2xl w-full max-w-6xl p-5 animate-[slideUp_0.35s_ease-out]">
             <div className="flex items-center mb-4"><h2 className="text-lg font-semibold text-white">{view==="select" && "Select Posting Type to Continue"}{view==="jobs" && "Post a Job"}{view==="internship" && "Post an Internship"}</h2></div>

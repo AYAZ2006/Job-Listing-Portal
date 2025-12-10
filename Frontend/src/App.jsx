@@ -26,9 +26,11 @@ import Profile from "./components/Profile.jsx";
 import ContactUs from "./components/ContactUs.jsx";
 import Applications from "./components/Applications.jsx";
 import Jobs from "./components/Jobs.jsx";
+import Edit from "./components/Edit.jsx"
 import InternshipDetail from "./components/InterviewDetail.jsx";
 import AnalyticsPage from "./components/AnalyticsPage.jsx";
 import Settings from "./components/Settings.jsx";
+import CommonFilters from "./components/CommonFilters.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function Layout() {
@@ -46,8 +48,8 @@ function Layout() {
   const showLoggedInNavbar = loggedInNavbarRoutes.includes(location.pathname) || location.pathname.startsWith("/jobs/") || location.pathname.startsWith("/internships/");
   return (
     <>
-      {["/admin", "/post", "/evaluate","/manage"].includes(location.pathname) && <ANavbar />}
-      {!showPublicNavbar && !showLoggedInNavbar && !["/admin", "/post", "/evaluate","/manage","/upload"].includes(location.pathname) && (<Navbar />)}
+      {["/admin", "/post", "/evaluate","/manage","/edit"].includes(location.pathname) && <ANavbar />}
+      {!showPublicNavbar && !showLoggedInNavbar && !["/admin", "/post", "/evaluate","/manage","/upload","/edit"].includes(location.pathname) && (<Navbar />)}
       {showLoggedInNavbar && !["/admin", "/post", "/evaluate","/manage"].includes(location.pathname) && (<CNavbar />)}
       <Routes>
         <Route path="/" element={<Dashboard />} />
@@ -60,6 +62,7 @@ function Layout() {
         <Route path="/recruiter-login" element={<RecruiterLogin />} />
         <Route path="/internships" element={<InternshipPage />} />
         <Route path="/post" element={<Post />} />
+        <Route path="/filters" element={<CommonFilters />} />
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/profile-download" element={<ProfileDownload />} />
@@ -70,6 +73,7 @@ function Layout() {
         <Route path="/evaluate" element={<Evaluate />} />
         <Route path="/watchlist" element={<WatchList />} />
         <Route path="/manage" element={<Manage />} />
+        <Route path="/edit" element={<Edit />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/profile" element={<Profile />} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { IoBriefcaseOutline } from "react-icons/io5";
@@ -8,20 +8,29 @@ import { BiTimeFive } from "react-icons/bi";
 import { FaRupeeSign } from "react-icons/fa";
 import { LuCalendarDays } from "react-icons/lu";
 import { toast } from "react-toastify";
-
+import CommonFilters from "./CommonFilters";
 export default function Internships() {
   const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ type: "", location: "", keywords: "" });
+  const [filters, setFilters] = useState({workMode: "",workType: "",datePosted: "",location: "",keywords: "",});
   const email = localStorage.getItem("user_email") || "";
-
   const daysAgo = (dateString) => {
     const posted = new Date(dateString);
     const now = new Date();
     const diff = Math.floor((now - posted) / (1000 * 60 * 60 * 24));
     return diff === 0 ? "Today" : `${diff} days ago`;
   };
-
+  const filteredInternships = useMemo(() => {
+    return internships.filter((item) => {
+      const daysOld = Math.floor((Date.now() - new Date(item.created_at)) / 86400000);
+      const modeMatch = !filters.workMode || item.work_mode?.toLowerCase().includes(filters.workMode.toLowerCase()) || filters.workMode.toLowerCase().includes(item.work_mode?.toLowerCase());
+      const typeMatch = !filters.workType || item.work_type === filters.workType;
+      const dateMatch = !filters.datePosted || daysOld <= {past24hours: 1,pastweek: 7,pastmonth: 30,past3months: 90,past6months: 180,pastyear: 365,}[filters.datePosted];
+      const locationMatch = !filters.location || item.location.toLowerCase().includes(filters.location.toLowerCase());
+      const keywordMatch = !filters.keywords || item.internship_title.toLowerCase().includes(filters.keywords.toLowerCase()) || item.company_name.toLowerCase().includes(filters.keywords.toLowerCase()) ||(item.description && item.description.toLowerCase().includes(filters.keywords.toLowerCase()));
+      return modeMatch && typeMatch && dateMatch && locationMatch && keywordMatch;
+    });
+  }, [internships, filters]);
   const fetchInternships = async () => {
     try {
       const res = await axios.get("http://127.0.0.1:8000/internships/");
@@ -45,47 +54,13 @@ export default function Internships() {
     }
   };
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const filteredInternships = internships.filter((intern) => {
-    return (
-      (!filters.type || intern.work_type.toLowerCase() === filters.type.toLowerCase()) &&
-      (!filters.location || intern.location.toLowerCase().includes(filters.location.toLowerCase())) &&
-      (!filters.keywords ||
-        intern.internship_title.toLowerCase().includes(filters.keywords.toLowerCase()) ||
-        intern.description?.toLowerCase().includes(filters.keywords.toLowerCase()))
-    );
-  });
-
   useEffect(() => {
     fetchInternships();
   }, []);
 
   return (
     <div className="h-screen w-full bg-[#121212] text-white flex flex-col md:flex-row overflow-hidden">
-      <aside className="w-72 h-3/4 sticky top-0 p-6 overflow-y-auto bg-[#1a1a1a] border-r border-white/10 mt-25 rounded-lg ml-5 hidden md:block">
-        <h2 className="text-lg font-semibold mb-6">Filters</h2>
-        <div className="mb-6">
-          <h3 className="font-medium mb-2">Job Type</h3>
-          <select name="type" value={filters.type} onChange={handleFilterChange} className="w-full px-3 py-2 bg-[#262626] border border-white/10 rounded outline-none">
-            <option value="">All</option>
-            <option value="Internship">Internship</option>
-            <option value="Full Time">Full Time</option>
-            <option value="Part Time">Part Time</option>
-          </select>
-        </div>
-        <div className="mb-6">
-          <h3 className="font-medium mb-2">Location</h3>
-          <input name="location" value={filters.location} onChange={handleFilterChange} type="text" placeholder="Search location" className="w-full px-3 py-2 bg-[#262626] border border-white/10 rounded outline-none"/>
-        </div>
-        <div className="mb-6">
-          <h3 className="font-medium mb-2">Keywords</h3>
-          <input name="keywords" value={filters.keywords} onChange={handleFilterChange} type="text" placeholder="React, Python, etc" className="w-full px-3 py-2 bg-[#262626] border border-white/10 rounded outline-none"/>
-        </div>
-      </aside>
+      <CommonFilters filters={filters} setFilters={setFilters} />
       <main className="flex-1 h-[90vh] overflow-y-auto p-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden mt-20 space-y-6">
         {loading && <p className="text-center text-gray-400">Loading internships...</p>}
         {!loading && filteredInternships.length === 0 && (

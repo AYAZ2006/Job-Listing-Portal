@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from rest_framework import viewsets
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .serializers import JobSerializer, InternshipSerializer, ContactSerializer, ResumeUploadSerializer,CandidateProfileSerializer
 from django.utils import timezone
 from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification,Favorite, Application,ResumeUpload,CandidateProfile,ApplicationInternship
@@ -115,7 +115,7 @@ User = get_user_model()
 class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all().order_by('-created_at')
     serializer_class = JobSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser,JSONParser]
     authentication_classes = []
     permission_classes = []
 
@@ -133,20 +133,19 @@ class JobViewSet(viewsets.ModelViewSet):
 class InternshipViewSet(viewsets.ModelViewSet):
     queryset = Internship.objects.all().order_by('-created_at')
     serializer_class = InternshipSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser,JSONParser]
     authentication_classes = []
     permission_classes = []
     def perform_create(self, serializer):
-        username = self.request.data.get("username")
-        if username:
-            recruiter = Recruiter.objects.get(username=username)
+        email = self.request.data.get("email")
+        if email:
+            recruiter = Recruiter.objects.get(email=email)
             internship = serializer.save(created_by=recruiter)
         else:
             internship = serializer.save()
         candidates = Candidate.objects.all()
         for candidate in candidates:
             Notification.objects.create(candidate=candidate,message=f"New internship posted: {internship.internship_title} at {internship.company_name}")
-
 
 
 class MyJobsView(APIView):
