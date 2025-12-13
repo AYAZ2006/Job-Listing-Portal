@@ -18,6 +18,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
 
 class JobSerializer(serializers.ModelSerializer):
+    company_logo = serializers.ImageField(use_url=True)
     class Meta:
         model = Job
         fields = '__all__'
@@ -35,6 +36,7 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'email', 'phone', 'company', 'message']
 
 class ResumeUploadSerializer(serializers.ModelSerializer):
+    file = serializers.FileField(use_url=True)
     class Meta:
         model = ResumeUpload
         fields = ["resume_id", "email", "file", "uploaded_at"]
