@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.hashers import make_password, check_password
 class User(AbstractUser):
@@ -51,7 +52,7 @@ class Job(models.Model):
     WORK_MODE_CHOICES = [(OFFICE, 'Office'),(REMOTE, 'Remote'),(HYBRID, 'Hybrid'),]
     job_title = models.CharField(max_length=200)
     company_name = models.CharField(max_length=200)
-    company_logo = models.ImageField(upload_to='company_logos/', null=True, blank=True)
+    company_logo = CloudinaryField('image', blank=True, null=True)
     openings = models.PositiveIntegerField()
     work_type = models.CharField(max_length=20, choices=WORK_TYPE_CHOICES)
     work_mode = models.CharField(max_length=20, choices=WORK_MODE_CHOICES)
@@ -75,7 +76,7 @@ class Internship(models.Model):
     internship_title = models.CharField(max_length=200)
     company_name = models.CharField(max_length=200)
     duration_months = models.PositiveIntegerField()
-    company_logo = models.ImageField(upload_to="company_logos/", null=True, blank=True)
+    company_logo = CloudinaryField('image', blank=True, null=True)
     openings = models.PositiveIntegerField()
     work_type = models.CharField(max_length=20, choices=WORK_TYPE_CHOICES)
     work_mode = models.CharField(max_length=20, choices=WORK_MODE_CHOICES)

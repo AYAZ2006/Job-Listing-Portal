@@ -36,9 +36,9 @@ export default function WatchList() {
     }, [applications, filters]);
   const fetchFavorites = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/favorite-list/", { email });
+      const res = await axios.post("https://job-listing-portal-8.onrender.com/favorite-list/", { email });
       const favoriteItems = res.data.favorite_items || [];
-      const [jobsRes, internsRes] = await Promise.all([axios.get("http://127.0.0.1:8000/jobs/"),axios.get("http://127.0.0.1:8000/internships/")]);
+      const [jobsRes, internsRes] = await Promise.all([axios.get("https://job-listing-portal-8.onrender.com/jobs/"),axios.get("https://job-listing-portal-8.onrender.com/internships/")]);
       const allJobs = jobsRes.data;
       const allInterns = internsRes.data;
       const mappedItems = favoriteItems.map((fav) => {if (fav.type === "job") {const job = allJobs.find((j) => j.id === fav.id);return job ? { ...job, type: "job", is_favorite: true } : null;}else if (fav.type === "internship") {const intern = allInterns.find((i) => i.id === fav.id);return intern ? { ...intern, type: "internship", is_favorite: true } : null;}return null;}).filter(Boolean);
@@ -55,7 +55,7 @@ export default function WatchList() {
       const payload = { email };
       if (item.type === "job") payload.job_id = item.id;
       if (item.type === "internship") payload.internship_id = item.id;
-      const res = await axios.post("http://127.0.0.1:8000/favorite/", payload);
+      const res = await axios.post("https://job-listing-portal-8.onrender.com/favorite/", payload);
       const isFav = res.data.favorite;
       setItems((prev) => prev.map((i) => (i.id === item.id && i.type === item.type ? { ...i, is_favorite: isFav } : i)));
     } catch (error) {

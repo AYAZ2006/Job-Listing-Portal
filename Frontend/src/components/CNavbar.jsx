@@ -23,7 +23,7 @@ export default function CNavbar() {
   }, []);
   useEffect(() => {
     if (!openNotifications) return;
-    axios.get(`http://127.0.0.1:8000/candidate/notifications/?email=${email}`).then((res) => setNotifications(res.data)).catch((err) => console.error(err));
+    axios.get(`https://job-listing-portal-8.onrender.com/candidate/notifications/?email=${email}`).then((res) => setNotifications(res.data)).catch((err) => console.error(err));
   }, [openNotifications]);
   useEffect(() => {
     setUnreadCount(notifications.filter(n => !n.is_read).length);
@@ -32,7 +32,7 @@ export default function CNavbar() {
     setNotifications(prev =>
       prev.map(n =>n.id === id ? { ...n, is_read: true } : n)
     );
-    axios.patch(`http://127.0.0.1:8000/candidate/notifications/${id}/`,{ is_read: true }).catch(err => console.error(err));
+    axios.patch(`https://job-listing-portal-8.onrender.com/candidate/notifications/${id}/`,{ is_read: true }).catch(err => console.error(err));
   }
   return (
     <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 w-[95%] backdrop-blur-md bg-white/10 rounded-2xl shadow-lg z-50">

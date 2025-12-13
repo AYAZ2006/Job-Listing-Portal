@@ -14,7 +14,7 @@ function Manage() {
   const fetchJobs = async () => {
     try {
       const username = localStorage.getItem("username");
-      const res = await axios.get(`http://127.0.0.1:8000/my-jobs/?username=${username}`);
+      const res = await axios.get(`https://job-listing-portal-8.onrender.com/my-jobs/?username=${username}`);
       setJobs(res.data);
     } catch (err) {
       toast.error(err);
@@ -24,7 +24,7 @@ function Manage() {
   const fetchInternships = async () => {
     try {
       const username = localStorage.getItem("username");
-      const res = await axios.get(`http://127.0.0.1:8000/my-internships/?username=${username}`);
+      const res = await axios.get(`https://job-listing-portal-8.onrender.com/my-internships/?username=${username}`);
       setInternships(res.data);
     } catch (err) {
       toast.error(err);
@@ -37,7 +37,7 @@ function Manage() {
   const handleDelete = async (id, type) => {
     setLoading(true);
     try {
-      const url = type === "job" ? `http://127.0.0.1:8000/jobs/${id}/`: `http://127.0.0.1:8000/internships/${id}/`;
+      const url = type === "job" ? `https://job-listing-portal-8.onrender.com/jobs/${id}/`: `https://job-listing-portal-8.onrender.com/internships/${id}/`;
       await axios.delete(url);
       if (type === "job") fetchJobs();
       else fetchInternships();

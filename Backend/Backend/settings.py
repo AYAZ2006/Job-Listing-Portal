@@ -14,9 +14,11 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import dj_database_url
-
+import cloudinary_storage
 load_dotenv()
+import cloudinary
 
+cloudinary.config(cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME", "dnaqjnfcd"),api_key=os.environ.get("CLOUDINARY_API_KEY", "273387874662535"),api_secret=os.environ.get("CLOUDINARY_API_SECRET", "EfTrer0XzIki0Qxnf__0gOf_Qng"),secure=True)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9ex+&vvd5z&+!ya-v5h3*rz!ss6av#bpx0islpkdrjz_q6t)-4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -163,5 +165,9 @@ else:
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 CORS_ALLOW_ALL_ORIGINS = True
-    
+CLOUDINARY_STORAGE={
+    'CLOUD_NAME':'dnaqjnfcd',
+    'API_KEY':'273387874662535',
+    'API_SECRET':'EfTrer0XzIki0Qxnf__0gOf_Qng'
+}
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"

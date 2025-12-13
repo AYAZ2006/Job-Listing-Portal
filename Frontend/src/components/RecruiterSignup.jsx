@@ -23,7 +23,7 @@ export default function Recruiter() {
     }
     setLoading(true);  
     try {
-      const res = await axios.post("http://127.0.0.1:8000/recruiter/send-otp/", { email });
+      const res = await axios.post("https://job-listing-portal-8.onrender.com/recruiter/send-otp/", { email });
       toast.success("OTP sent");
       setOpenOtp(true);
     } catch (err) {
@@ -35,7 +35,7 @@ export default function Recruiter() {
 
   const handleResend = async () => {
     try {
-      await axios.post("http://127.0.0.1:8000/recruiter/send-otp/", { email });
+      await axios.post("https://job-listing-portal-8.onrender.com/recruiter/send-otp/", { email });
       toast.success("OTP resent successfully!");
     } catch (err) {
       toast.error(err.response?.data?.error || "Error resending OTP");
@@ -45,7 +45,7 @@ export default function Recruiter() {
   const handleVerify = async (email, otp) => {
     setLoading(true);
     try {
-      const res = await axios.post("http://127.0.0.1:8000/recruiter/verify-otp/", {email,otp,username: fname,password: password,mobile_number: mobile,organization_name: selectedCompany});
+      const res = await axios.post("https://job-listing-portal-8.onrender.com/recruiter/verify-otp/", {email,otp,username: fname,password: password,mobile_number: mobile,organization_name: selectedCompany});
       toast.success("OTP Verified Successfully!");
       setOpenOtp(false);
       localStorage.setItem("user_type", "recruiter");

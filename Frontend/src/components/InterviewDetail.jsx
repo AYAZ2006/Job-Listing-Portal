@@ -20,11 +20,11 @@ export default function InternshipDetail() {
   const [applied, setApplied] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {axios.get(`http://127.0.0.1:8000/internships/${id}/`)
+  useEffect(() => {axios.get(`https://job-listing-portal-8.onrender.com/internships/${id}/`)
       .then((res) => setInternship(res.data))
       .catch((err) => console.error(err));
   }, [id]);
-  useEffect(() => {axios.post("http://127.0.0.1:8000/apply-internship/", {internship_id: Number(id),email: localStorage.getItem("user_email"),check_only: true,})
+  useEffect(() => {axios.post("https://job-listing-portal-8.onrender.com/apply-internship/", {internship_id: Number(id),email: localStorage.getItem("user_email"),check_only: true,})
       .then((res) => setApplied(res.data.applied))
       .catch(() => {});
   }, [id]);
@@ -38,7 +38,7 @@ export default function InternshipDetail() {
 
   const applyJob = () => {
     setLoading(true);
-    axios.post("http://127.0.0.1:8000/apply-internship/", {internship_id: Number(id),email: localStorage.getItem("user_email"),})
+    axios.post("https://job-listing-portal-8.onrender.com/apply-internship/", {internship_id: Number(id),email: localStorage.getItem("user_email"),})
       .then(() => {
         toast.success("Applied successfully");
         setApplied(true);
@@ -53,7 +53,7 @@ export default function InternshipDetail() {
 
   const withdrawJob = () => {
     setLoading(true);
-    axios.delete("http://127.0.0.1:8000/apply-internship/", {data: {internship_id: Number(id),email: localStorage.getItem("user_email"),},})
+    axios.delete("https://job-listing-portal-8.onrender.com/apply-internship/", {data: {internship_id: Number(id),email: localStorage.getItem("user_email"),},})
       .then(() => {
         toast.success("Withdrawn successfully");
         setApplied(false);

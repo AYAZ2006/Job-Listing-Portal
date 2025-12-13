@@ -21,7 +21,7 @@ function Admin() {
     const fetchData = async () => {
       try {
         const recruiterEmail = localStorage.getItem("username");
-        const [jobsRes, internshipsRes] = await Promise.all([axios.get(`http://127.0.0.1:8000/my-jobs/?username=${recruiterEmail}`),axios.get(`http://127.0.0.1:8000/my-internships/?username=${recruiterEmail}`)]);
+        const [jobsRes, internshipsRes] = await Promise.all([axios.get(`https://job-listing-portal-8.onrender.com/my-jobs/?username=${recruiterEmail}`),axios.get(`https://job-listing-portal-8.onrender.com/my-internships/?username=${recruiterEmail}`)]);
         setPostedJobs(jobsRes.data || []);
         setPostedInternships(internshipsRes.data || []);
       } catch (err) {

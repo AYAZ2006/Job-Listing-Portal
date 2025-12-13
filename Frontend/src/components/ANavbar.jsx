@@ -32,7 +32,7 @@ export default function AdminNavbar() {
 
   useEffect(() => {
     if (!openNotifications) return;
-    axios.get(`http://127.0.0.1:8000/recruiter/notifications/?email=${email}`).then((res) => setNotifications(res.data)).catch((err) => console.error(err));
+    axios.get(`https://job-listing-portal-8.onrender.com/recruiter/notifications/?email=${email}`).then((res) => setNotifications(res.data)).catch((err) => console.error(err));
   }, [openNotifications]);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function AdminNavbar() {
 
   function markNotificationAsRead(id) {
     setNotifications((prev) =>prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
-    axios.patch(`http://127.0.0.1:8000/recruiter/notifications/${id}/`,{ is_read: true });
+    axios.patch(`https://job-listing-portal-8.onrender.com/recruiter/notifications/${id}/`,{ is_read: true });
   }
 
   return (
