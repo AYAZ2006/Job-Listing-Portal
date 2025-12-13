@@ -145,7 +145,7 @@ class Contact(models.Model):
 class ResumeUpload(models.Model):
     email = models.EmailField()
     resume_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    file = models.FileField(upload_to="resumes/")
+    file = CloudinaryField('file')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.email} - {self.resume_id}"
