@@ -149,19 +149,10 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'accounts.User'
 
-ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+SENDGRID_API_KEY = os.environ.get("SENDGRID_API_KEY")
+DEFAULT_FROM_EMAIL = os.environ.get("SENDGRID_DEFAULT_FROM")
 
-if ENVIRONMENT == "production":
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.render.com")
-    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", 587))
-    EMAIL_USE_TLS = True
-    EMAIL_USE_SSL = False
-    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 CORS_ALLOW_ALL_ORIGINS = True
