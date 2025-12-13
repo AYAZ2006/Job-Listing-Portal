@@ -36,6 +36,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'cloudinary',
+    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -162,5 +164,4 @@ else:
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 CORS_ALLOW_ALL_ORIGINS = True
     
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
