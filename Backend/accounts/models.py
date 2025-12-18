@@ -18,7 +18,7 @@ class Candidate(models.Model):
 class Recruiter(models.Model):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=50)
-    password = models.CharField(max_length=50, blank=True)
+    password = models.CharField(max_length=128)
     mobile_number = models.CharField(max_length=15)
     organization_name = models.CharField(max_length=100)
 
