@@ -13,74 +13,36 @@ from .serializers import JobSerializer, InternshipSerializer, ContactSerializer,
 from django.utils import timezone
 from .models import Candidate, Recruiter, EmailOTP, Job, Internship, Notification,Favorite, Application,ResumeUpload,CandidateProfile,ApplicationInternship
 from django.conf import settings
-class CandidateSendOtpView(APIView):
-    def post(self, request):
-        email = request.data.get("email")
-        if not email:
-            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
-        if Candidate.objects.filter(email=email).exists():
-            return Response({"error": "Account already exists, please sign in"}, status=status.HTTP_400_BAD_REQUEST)
-        otp = get_random_string(length=6, allowed_chars="0123456789")
-        EmailOTP.objects.update_or_create(email=email,defaults={"otp": otp, "valid_until": timezone.now() + timezone.timedelta(minutes=10)})
-        send_mail(subject="Your OTP Code",message=f"Your OTP is {otp}",from_email=settings.DEFAULT_FROM_EMAIL,recipient_list=[email],)
-        return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
 
-class CandidateVerifyOtpView(APIView):
+class CandidateSignupView(APIView):
     def post(self, request):
         email = request.data.get("email")
-        otp = request.data.get("otp")
         username = request.data.get("username")
-        password = request.data.get("password", "")
+        password = request.data.get("password")
         mobile_number = request.data.get("mobile_number")
-        if not all([email, otp, username, mobile_number]):
-            return Response({"error": "All fields except password are required"}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            otp_obj = EmailOTP.objects.get(email=email)
-        except EmailOTP.DoesNotExist:
-            return Response({"error": "OTP not sent"}, status=status.HTTP_400_BAD_REQUEST)
-        if not otp_obj.is_valid() or otp_obj.otp != otp:
-            return Response({"error": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
-        candidate, created = Candidate.objects.get_or_create(
-            email=email,
-            defaults={"username": username,"password": password,"mobile_number": mobile_number,})
-        otp_obj.delete()
-        return Response({"message": "OTP verified, candidate registered successfully"}, status=status.HTTP_200_OK)
+        if not all([email, username, password, mobile_number]):
+            return Response({"error": "Email, username, password, and mobile number are required"}, status=status.HTTP_400_BAD_REQUEST)
+        if Candidate.objects.filter(email=email).exists():
+            return Response({"error": "Account with this email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        hashed_password = make_password(password)
+        candidate = Candidate.objects.create(email=email,username=username,password=hashed_password,mobile_number=mobile_number)
+        return Response({"message": "Candidate registered successfully","username": candidate.username}, status=status.HTTP_201_CREATED)
 
-class RecruiterSendOtpView(APIView):
+class RecruiterSignupView(APIView):
     def post(self, request):
         email = request.data.get("email")
-        if not email:
-            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
-        if Recruiter.objects.filter(email=email).exists():
-            return Response({"error": "Account already exists, please sign in"}, status=status.HTTP_400_BAD_REQUEST)
-        otp = get_random_string(length=6, allowed_chars="0123456789")
-        EmailOTP.objects.update_or_create(email=email,defaults={"otp": otp, "valid_until": timezone.now() + timezone.timedelta(minutes=10)})
-        send_mail(subject="Your OTP Code",message=f"Your OTP is {otp}",from_email=settings.DEFAULT_FROM_EMAIL,recipient_list=[email],)
-        return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
-
-class RecruiterVerifyOtpView(APIView):
-    def post(self, request):
-        email = request.data.get("email")
-        otp = request.data.get("otp")
         username = request.data.get("username")
-        password = request.data.get("password", "")
+        password = request.data.get("password")
         mobile_number = request.data.get("mobile_number")
         organization_name = request.data.get("organization_name")
-        if not all([email, otp, username, mobile_number, organization_name]):
-            return Response({"error": "All fields except password are required"}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            otp_obj = EmailOTP.objects.get(email=email)
-        except EmailOTP.DoesNotExist:
-            return Response({"error": "OTP not sent"}, status=status.HTTP_400_BAD_REQUEST)
-        if not otp_obj.is_valid() or otp_obj.otp != otp:
-            return Response({"error": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
-
-        recruiter, created = Recruiter.objects.get_or_create(
-            email=email,
-            defaults={"username": username,"password": password,"mobile_number": mobile_number,"organization_name": organization_name,})
-        otp_obj.delete()
-        return Response({"message": "OTP verified, recruiter registered successfully"}, status=status.HTTP_200_OK)
-
+        if not all([email, username, password, mobile_number, organization_name]):
+            return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
+        if Recruiter.objects.filter(email=email).exists():
+            return Response({"error": "Account with this email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+        hashed_password = make_password(password)
+        recruiter = Recruiter.objects.create(email=email,username=username,password=hashed_password,mobile_number=mobile_number,organization_name=organization_name)
+        return Response({"message": "Recruiter registered successfully","username": recruiter.username}, status=status.HTTP_201_CREATED)
+    
 class CandidateLoginView(APIView):
     def post(self, request):
         email = request.data.get("email")
@@ -91,10 +53,9 @@ class CandidateLoginView(APIView):
             candidate = Candidate.objects.get(email=email)
         except Candidate.DoesNotExist:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-        if candidate.password != password:
+        if not check_password(password, candidate.password):
             return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message": f"Welcome {candidate.username}!"}, status=status.HTTP_200_OK)
-
+        return Response({"message": f"Welcome {candidate.username}!","username": candidate.username,"email": candidate.email}, status=status.HTTP_200_OK)
 
 class RecruiterLoginView(APIView):
     def post(self, request):
@@ -106,10 +67,9 @@ class RecruiterLoginView(APIView):
             recruiter = Recruiter.objects.get(email=email)
         except Recruiter.DoesNotExist:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if recruiter.password != password:
+        if not check_password(password, recruiter.password):
             return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message": f"Welcome {recruiter.username}!"}, status=status.HTTP_200_OK)
+        return Response({"message": f"Welcome {recruiter.username}!","username": recruiter.username,"email": recruiter.email,"organization": recruiter.organization_name}, status=status.HTTP_200_OK)
 
 User = get_user_model()
 class JobViewSet(viewsets.ModelViewSet):

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import OtpModal from "./ui/OtpModal";
 import { toast } from "react-toastify";
 import axios from "axios";
 import HashLoader from 'react-spinners/HashLoader';
@@ -9,22 +8,21 @@ export default function CandidateLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [openOtp, setOpenOtp] = useState(false);
   const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
     if (!email || !password) {
-      toast.error("Enter both email and password");
+      toast.error("Please enter both email and password");
       return;
     }
     setLoading(true);  
     try {
       const res = await axios.post('https://job-listing-portal-8.onrender.com/candidate/login/', { email:email, password:password });
-      toast.success(res.data.message);
+      toast.success(res.data.message || "Login successful!");
       localStorage.setItem("user_type", "candidate");
       localStorage.setItem("user_email", email);
       navigate("/home");
     } catch (err) {
-      toast.error(err.response?.data?.error || "Invalid credentials");
+      toast.error(err.response?.data?.error || "Invalid email or password");
     } finally {
       setLoading(false);
     }

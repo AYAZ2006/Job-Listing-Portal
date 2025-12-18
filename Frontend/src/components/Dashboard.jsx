@@ -10,6 +10,26 @@ function Dashboard() {
   const [showCursor1, setShowCursor1] = React.useState(true);
   const [showCursor2, setShowCursor2] = React.useState(true);
   const [showCursor3, setShowCursor3] = React.useState(true);
+  const companies = ["Google","Microsoft","Amazon","Meta","Apple","Netflix","Adobe","Salesforce",];
+  const logos = [
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/256211ad-d248-43f6-9361-f9f666b25300/public", alt: "Microsoft" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/b6975c88-b230-4c80-05de-523799dea000/public", alt: "Amazon" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/bf9f88fb-c486-4425-d4ba-de51b8d27f00/public", alt: "Adobe" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/f3d71fd8-64c8-451f-bf95-df47a432b800/public", alt: "Qualcomm" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/bb24aedc-6d7b-42a7-15b4-3f1ddcfc8700/public", alt: "Visa" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/b685226e-d473-4917-555c-461a1302b300/public", alt: "Oracle" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/465992cf-1519-4dbc-71ab-457868d6a600/public", alt: "DE Shaw & Co" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/eaa557ab-6445-46b6-1c0b-fed8a77bf600/public", alt: "Google" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/380e8284-812e-4235-cf3c-7c19c630d200/public", alt: "Flipkart" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/44878280-dd42-4b9e-c76d-ae235d072f00/public", alt: "Walmart" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/ac315be4-16b6-4079-3de5-314a1054df00/public", alt: "Goldman Sachs" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/b0be829a-e9c0-4611-1c97-233827517900/public", alt: "IBM" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/f310ad12-d6d8-4adf-df3e-b040aba7f200/public", alt: "Meta" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/18f4096f-ee27-4246-c5ec-89b979bc0900/public", alt: "DarwinBox" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/f1acbf97-b6fe-4004-b90d-d018d91b7500/public", alt: "JP Morgan" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/1bf932d8-2b71-4101-4bd2-230bc4ab0a00/public", alt: "Accenture" },
+    { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/a793dceb-1355-442d-054f-2e778707a700/public", alt: "Apple" },
+  ];
   const Navigate = useNavigate();
   return (
     <div className="w-screen min-h-screen overflow-hidden bg-[url('/image.png')] bg-center bg-cover  text-white">
@@ -42,13 +62,13 @@ function Dashboard() {
          <div className="relative h-screen w-full overflow-hidden bg-[#121212] bg-cover bg-top animate-bgMove" style={{ backgroundImage: "url('/landing-parallax-1.jpg')" }}>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
             <div className="absolute top-[40%] right-1/2 translate-x-1/2 -translate-y-1/2 z-30 text-center">
-              <h3 className="text-white text-xl font-light tracking-[15px] animate-textUp1">The Land of Serene Beauty</h3>
-              <h1 className="text-white text-[12rem] font-extrabold uppercase tracking-[40px] mt-[-20px] animate-textUp2">Kerala</h1>
+              <h3 className="text-white text-xl font-light tracking-[15px] animate-textUp1">Discover Your Next Opportunity</h3>
+              <h1 className="text-white text-[12rem] font-extrabold uppercase tracking-[40px] mt-[-20px] animate-textUp2">JobLelo</h1>
             </div>
             <div className="absolute bottom-[18%] w-full flex justify-center z-30">
-              <p className="text-white/70 text-sm w-[70%] leading-7 tracking-[1px] text-center animate-textUp3">Kerala is a tropical paradise in southern India, known for itsbreathtaking landscapes, rich culture, and serene backwaters. Whetheryou're seeking adventure, relaxation, or a taste of India's uniquetraditions, Kerala has something for everyone. From lush hills topristine beaches, this state blends beauty and tradition perfectly.</p>
+              <p className="text-white/70 text-sm w-[70%] leading-7 tracking-[1px] text-center animate-textUp3">JobLelo connects talented professionals with their dream roles across industries. Browse thousands of listings, discover exciting opportunities, and take the next step in your career. From internships to full-time positions, find the perfect fit for your skills and ambitions.</p>
             </div>
-            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4">
+            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/login')}>
               <button className="w-[300px] h-[50px] border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right"></i></button>
             </div>
             <div className="absolute top-1/2 w-full flex justify-between px-[5%] text-white/40 text-4xl animate-zoomOut z-30">
@@ -81,21 +101,37 @@ function Dashboard() {
               <ScrambledText className="text-center inline-block w-20" radius={120} duration={1} speed={0.6} scrambleChars="!@#$%^&*()_+" style={{ color: 'currentColor', fontSize: 'clamp(0.65rem, 1.5vw, 1rem)', fontFamily: 'inherit' }}>Support</ScrambledText>
             </nav>
           </div>
+          <h1 className="fixed mt-170 text-5xl">Our Alumini Works At</h1>
         </ParallaxLayer>
         <ParallaxLayer offset={3} speed={0} className="relative h-screen">
-          <div className="absolute inset-0 bg-[#0A0A0A] z-10"></div>
-          <div className="absolute top-10 w-full overflow-hidden z-20">
-              <div className="animate-marquee whitespace-nowrap flex gap-10 text-white text-xl font-semibold">
-                <span>Google</span>
-                <span>Microsoft</span>
-                <span>Amazon</span>
-                <span>Meta</span>
-                <span>Apple</span>
-                <span>Netflix</span>
-                <span>Adobe</span>
-                <span>Salesforce</span>
+          <div className="absolute inset-0 bg-[#0A0A0A] z-10">
+            <section className="py-16 overflow-hidden bg-black backdrop-blur-sm">
+              <style jsx>{`
+                @keyframes marquee {
+                  0% { transform: translateX(0%); }
+                  100% { transform: translateX(-50%); }
+                }
+                .animate-marquee {animation: marquee 60s linear infinite;}
+                .animate-marquee:hover {animation-play-state: paused;}
+              `}</style>
+              <div className="flex animate-marquee whitespace-nowrap min-w-max">
+                <div className="flex items-center gap-20">
+                  {logos.map((logo, index) => (
+                    <div key={`first-${index}`} className="shrink-0 px-10">
+                      <img src={logo.src} alt={logo.alt} className="h-24 w-auto object-contain brightness-0 invert opacity-75 hover:opacity-100 transition-opacity duration-300"/>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-20">
+                  {logos.map((logo, index) => (
+                    <div key={`dup-${index}`} className="shrink-0 px-10">
+                      <img src={logo.src} alt={logo.alt} className="h-24 w-auto object-contain brightness-0 invert opacity-75 hover:opacity-100 transition-opacity duration-300"/>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            </section>
+          </div>
           <div className="absolute bottom-0 w-full z-20">
             <Footer />
           </div>

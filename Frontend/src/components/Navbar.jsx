@@ -26,7 +26,7 @@ export default function Navbar() {
             <li><Link to="/" className="py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Home</Link></li>
             <li className="relative group">
               <button className="flex items-center gap-1 py-2 px-4 hover:bg-white/20 rounded-full transition text-white/80">Resources <span className="ml-1">&#9662;</span></button>
-              <div className="absolute top-full left-0 mt-4 bg-white/10 backdrop-blur-md text-white p-4 rounded-2xl shadow-lg grid grid-cols-2 gap-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-max">
+              <div className="absolute top-full left-0 mt-4 bg-black backdrop-blur-md text-white p-4 rounded-2xl shadow-lg grid grid-cols-2 gap-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 min-w-max">
                 {navListMenuItems.map((item, index) => (
                   <div key={index} className="p-2 hover:bg-white/20 rounded-xl">
                     <p className="font-bold">{item.title}</p>
