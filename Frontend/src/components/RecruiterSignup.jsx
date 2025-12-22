@@ -1,37 +1,59 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import companies from "./Org";
+import OtpModal from "./ui/OtpModal";
 import { toast } from "react-toastify";
 import axios from 'axios';
 import HashLoader from 'react-spinners/HashLoader';
 export default function Recruiter() {
-  const navigate = useNavigate();
+  const Navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [fname, setFname] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
   const [selectedCompany, setSelectedCompany] = useState("");
+  const [openOtp, setOpenOtp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const handleSignup = async(e) => {
     e.preventDefault();
-    if (!email || !fname || !password || !mobile || !selectedCompany) {
-      toast.warning("Please fill all fields");
+    if (!email) {
+      toast.warning("Please enter email before signup");
       return;
     }
     setLoading(true);  
     try {
-      const signupRes = await axios.post("https://job-listing-portal-8.onrender.com/recruiter/signup/", {email,username: fname,password,mobile_number: mobile,organization_name: selectedCompany});
-      toast.success("Account created successfully!");
-      const loginRes = await axios.post("https://job-listing-portal-8.onrender.com/recruiter/login/", {email,password});
-      toast.success(`Welcome ${fname}!`);
+      const res = await axios.post("http://127.0.0.1:8000/recruiter/send-otp/", { email });
+      toast.success("OTP sent");
+      setOpenOtp(true);
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Error sending OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      await axios.post("http://127.0.0.1:8000/recruiter/send-otp/", { email });
+      toast.success("OTP resent successfully!");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Error resending OTP");
+    }
+  };
+
+  const handleVerify = async (email, otp) => {
+    setLoading(true);
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/recruiter/verify-otp/", {email,otp,username: fname,password: password,mobile_number: mobile,organization_name: selectedCompany});
+      toast.success("OTP Verified Successfully!");
+      setOpenOtp(false);
       localStorage.setItem("user_type", "recruiter");
       localStorage.setItem("recruiter_email", email);
       localStorage.setItem("username", fname);
-      navigate("/admin");
+      Navigate("/admin");
     } catch (err) {
-      const errorMsg = err.response?.data?.error || "Something went wrong";
-      toast.error(errorMsg);
+      toast.error("Error verifying OTP");
     } finally {
       setLoading(false);
     }
@@ -90,10 +112,11 @@ export default function Recruiter() {
               <button type="submit" className="w-full py-3 bg-blue-600/50 rounded-lg text-white font-semibold hover:bg-blue-600/70 transition cursor-pointer mt-2">Sign up</button>
             </form>
             <p className="text-sm text-center text-gray-400 mt-2">Already have an account?
-              <span className="text-blue-400 ml-1 cursor-pointer hover:underline" onClick={() => navigate('/login')}>Login</span>
+              <span className="text-blue-400 ml-1 cursor-pointer hover:underline" onClick={() => Navigate('/login')}>Login</span>
             </p>
           </div>
         </div>
+        <OtpModal open={openOtp} email={email} onClose={() => setOpenOtp(false)} onResend={handleResend} onVerify={handleVerify}/>
       </div>
     </>
   );

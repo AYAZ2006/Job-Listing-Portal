@@ -24,9 +24,9 @@ function Edit() {
     formData.set("work_mode", workMode);
     setLoading(true);
     try {
-      const deleteUrl = type === "job" ? `https://job-listing-portal-8.onrender.com/jobs/${item.id}/` : `https://job-listing-portal-8.onrender.com/internships/${item.id}/`;
+      const deleteUrl = type === "job" ? `http://127.0.0.1:8000/jobs/${item.id}/` : `http://127.0.0.1:8000/internships/${item.id}/`;
       await axios.delete(deleteUrl);
-      const postUrl = type === "job" ? "https://job-listing-portal-8.onrender.com/jobs/" : "https://job-listing-portal-8.onrender.com/internships/";
+      const postUrl = type === "job" ? "http://127.0.0.1:8000/jobs/" : "http://127.0.0.1:8000/internships/";
       await axios.post(postUrl, formData, {headers: { "Content-Type": "multipart/form-data" },});
       toast.success("Updated successfully!");
       navigate("/manage");

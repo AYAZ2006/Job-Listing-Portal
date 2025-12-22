@@ -83,7 +83,7 @@ export default function Settings() {
   };
   const loadResume = () => {
   if (!email) return;
-  fetch(`https://job-listing-portal-8.onrender.com/view-resume/?email=${email}`).then(res => {
+  fetch(`http://127.0.0.1:8000/view-resume/?email=${email}`).then(res => {
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     })
@@ -97,10 +97,10 @@ export default function Settings() {
   useEffect(() => {loadResume();}, []);
   const handleDownload = async (resumeId) => {
     try {
-      const response = await fetch(`https://job-listing-portal-8.onrender.com/${resumeId}/download/`);
+      const response = await fetch(`http://127.0.0.1:8000/${resumeId}/download/`);
       if (!response.ok) throw new Error("Failed to fetch download URL");
       const data = await response.json();
-      const downloadUrl = `https://job-listing-portal-8.onrender.com/${data.download_url}`;
+      const downloadUrl = `http://127.0.0.1:8000/${data.download_url}`;
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = data.download_url.split("/").pop() || "resume.pdf";
@@ -122,7 +122,7 @@ export default function Settings() {
       return;
     }
     try {
-      const res = await fetch("https://job-listing-portal-8.onrender.com/delete-account/", {method: "DELETE",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email })});
+      const res = await fetch("http://127.0.0.1:8000/delete-account/", {method: "DELETE",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email })});
       if (res.ok) {
         toast.success("Account deleted permanently");
         localStorage.clear();
@@ -141,13 +141,13 @@ export default function Settings() {
     const newP = document.getElementById("newPass").value;
     const conf = document.getElementById("confirmPass").value;
     if (newP !== conf) return toast.error("Passwords don't match");
-    const res = await fetch("https://job-listing-portal-8.onrender.com/change-password/", {method: "POST",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email, current_password: curr, new_password: newP, confirm_password: conf })});
+    const res = await fetch("http://127.0.0.1:8000/change-password/", {method: "POST",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email, current_password: curr, new_password: newP, confirm_password: conf })});
     const data = await res.json();
     res.ok ? toast.success("Password changed!") : toast.error(data.error);
   };
   useEffect(() => {
     if (!email) return;
-    fetch(`https://job-listing-portal-8.onrender.com/profile/?email=${email}`).then(res => res.json()).then(data => {
+    fetch(`http://127.0.0.1:8000/profile/?email=${email}`).then(res => res.json()).then(data => {
         if (data.email) {setProfile(data);
           if (Array.isArray(data.skills)) {setSkills(data.skills.map((name, i) => ({ id: Date.now() + i, name })));}
           if (Array.isArray(data.experiences)) {setExperiences(data.experiences.map((exp, i) => ({ ...exp, id: exp.id || Date.now() + i })));}
@@ -157,7 +157,7 @@ export default function Settings() {
     const handleSave = () => {
       setLoading(true);
       const payload = {...profile, skills: skills.map(s => s.name), experiences: experiences };
-      fetch("https://job-listing-portal-8.onrender.com/profile/", {
+      fetch("http://127.0.0.1:8000/profile/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

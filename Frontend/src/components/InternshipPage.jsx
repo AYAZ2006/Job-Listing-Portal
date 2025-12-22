@@ -33,7 +33,7 @@ export default function Internships() {
   }, [internships, filters]);
   const fetchInternships = async () => {
     try {
-      const res = await axios.get("https://job-listing-portal-8.onrender.com/internships/");
+      const res = await axios.get("http://127.0.0.1:8000/internships/");
       setInternships(res.data.map((intern) => ({ ...intern, is_favorite: false })));
     } catch {
       toast.error("Failed to load internships");
@@ -44,7 +44,7 @@ export default function Internships() {
 
   const toggleFavorite = async (id) => {
     try {
-      const res = await axios.post("https://job-listing-portal-8.onrender.com/favorite/", { internship_id: id, email });
+      const res = await axios.post("http://127.0.0.1:8000/favorite/", { internship_id: id, email });
       const isFav = res.data.favorite;
       setInternships((prev) =>
         prev.map((intern) => (intern.id === id ? { ...intern, is_favorite: isFav } : intern))

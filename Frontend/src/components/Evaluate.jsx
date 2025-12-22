@@ -20,8 +20,8 @@ function Evaluate() {
     const fetchAllApplicants = async () => {
       try {
         setLoading(true);
-        const jobsResponse = await axios.get("https://job-listing-portal-8.onrender.com/jobs/", { params: { username: recruiterUsername } });
-        const internshipsResponse = await axios.get("https://job-listing-portal-8.onrender.com/internships/", { params: { username: recruiterUsername } });
+        const jobsResponse = await axios.get("http://127.0.0.1:8000/jobs/", { params: { username: recruiterUsername } });
+        const internshipsResponse = await axios.get("http://127.0.0.1:8000/internships/", { params: { username: recruiterUsername } });
         const jobs = jobsResponse.data || [];
         const internships = internshipsResponse.data || [];
         if (jobs.length === 0 && internships.length === 0) {setAllApplicants([]);toast.info("No postings yet");setLoading(false);return;}
@@ -29,7 +29,7 @@ function Evaluate() {
         for (const job of jobs) {
           if (!job.id) continue;
           try {
-            const res = await axios.post("https://job-listing-portal-8.onrender.com/job-applicants/", { job_id: job.id, email: recruiterUsername });
+            const res = await axios.post("http://127.0.0.1:8000/job-applicants/", { job_id: job.id, email: recruiterUsername });
             if (res.data.applicants) {res.data.applicants.forEach(app => {allApplicantsList.push({id: `${app.candidate_email}-${job.id}-job`,...app,applied_job_title: res.data.job_title || job.job_title,applied_company_name: res.data.company_name || job.company_name,status: app.status || "applied",posting_type: "job"});});
             }
           } catch (err) {}
@@ -37,7 +37,7 @@ function Evaluate() {
         for (const intern of internships) {
           if (!intern.id) continue;
           try {
-            const res = await axios.post("https://job-listing-portal-8.onrender.com/internship-applicants/", { internship_id: intern.id, email: recruiterUsername });
+            const res = await axios.post("http://127.0.0.1:8000/internship-applicants/", { internship_id: intern.id, email: recruiterUsername });
             if (res.data.applicants) {res.data.applicants.forEach(app => {allApplicantsList.push({id: `${app.candidate_email}-${intern.id}-internship`,...app,applied_job_title: res.data.internship_title || intern.internship_title,applied_company_name: res.data.company_name || intern.company_name,status: app.status || "applied",posting_type: "internship"});});
             }
           } catch (err) {}
@@ -48,7 +48,7 @@ function Evaluate() {
         for (const app of allApplicantsList) {
           if (resumeMap[app.candidate_email]) continue;
           try {
-            const res = await fetch(`https://job-listing-portal-8.onrender.com/view-resume/?email=${app.candidate_email}`);
+            const res = await fetch(`http://127.0.0.1:8000/view-resume/?email=${app.candidate_email}`);
             if (res.ok) {
               const data = await res.json();
               if (data?.length > 0) resumeMap[app.candidate_email] = data[0];
@@ -69,7 +69,7 @@ function Evaluate() {
   const toggleExpand = (id) => setExpandedId(prevId => (prevId === id ? null : id));
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.post("https://job-listing-portal-8.onrender.com/update-status/", { application_id: id, status: newStatus, recruiter_email: recruiterUsername });
+      await axios.post("http://127.0.0.1:8000/update-status/", { application_id: id, status: newStatus, recruiter_email: recruiterUsername });
       setAllApplicants(prev => prev.map(app => app.id === id ? { ...app, status: newStatus } : app));
       toast.success("Status updated");
     } catch (err) {
@@ -148,7 +148,7 @@ function Evaluate() {
                     <div className="mt-8 flex flex-wrap gap-4 justify-center pt-6 border-t border-white/10">
                       {app.linkedin && <a href={app.linkedin} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">LinkedIn</a>}
                       {app.portfolio && <a href={app.portfolio} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">Portfolio</a>}
-                      {resume?.file ? <a href={`https://job-listing-portal-8.onrender.com/${resume.file}`} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">Download Resume</a> : <span className="px-8 py-3 text-gray-500">No resume uploaded</span>}
+                      {resume?.file ? <a href={`http://127.0.0.1:8000/${resume.file}`} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">Download Resume</a> : <span className="px-8 py-3 text-gray-500">No resume uploaded</span>}
                     </div>
                   </div>
                 )}

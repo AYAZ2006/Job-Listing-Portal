@@ -18,13 +18,13 @@ function Home() {
     if (!email) return;
     const loadApplied = async () => {
       try {
-        const jobIdsRes = await axios.post("https://job-listing-portal-8.onrender.com/applied-jobs/", { email });
-        const allJobs = await axios.get("https://job-listing-portal-8.onrender.com/jobs/");
+        const jobIdsRes = await axios.post("http://127.0.0.1:8000/applied-jobs/", { email });
+        const allJobs = await axios.get("http://127.0.0.1:8000/jobs/");
         const appliedJobs = (jobIdsRes.data.applied_jobs || []).map(item => {const job = allJobs.data.find(j => j.id === item.job_id);
           if (!job) return null;
           return {...job,type: "job",title: job.job_title,company: job.company_name,status: item.status || "applied",applied_at: item.applied_at || job.created_at};}).filter(Boolean);
-        const internIdsRes = await axios.post("https://job-listing-portal-8.onrender.com/applied-internships/", { email });
-        const allInternships = await axios.get("https://job-listing-portal-8.onrender.com/internships/");
+        const internIdsRes = await axios.post("http://127.0.0.1:8000/applied-internships/", { email });
+        const allInternships = await axios.get("http://127.0.0.1:8000/internships/");
         const appliedInternships = (internIdsRes.data.applied_internships || []).map(item => {const intern = allInternships.data.find(i => i.id === item.internship_id);
             if (!intern) return null;
             return {...intern,type: "internship",title: intern.internship_title,company: intern.company_name,status: item.status || "applied",applied_at: item.applied_at || intern.created_at};}).filter(Boolean);
@@ -40,10 +40,10 @@ function Home() {
     if (!email) return;
     const fetchSavedJobs = async () => {
       try {
-        const resFavorites = await axios.post("https://job-listing-portal-8.onrender.com/favorite-list/", { email });
+        const resFavorites = await axios.post("http://127.0.0.1:8000/favorite-list/", { email });
         const favoriteItems = resFavorites.data.favorite_items || [];
-        const jobsRes = await axios.get("https://job-listing-portal-8.onrender.com/jobs/");
-        const internsRes = await axios.get("https://job-listing-portal-8.onrender.com/internships/");
+        const jobsRes = await axios.get("http://127.0.0.1:8000/jobs/");
+        const internsRes = await axios.get("http://127.0.0.1:8000/internships/");
         const savedItems = favoriteItems.map(item => {
           if (item.type === "job") {const job = jobsRes.data.find(j => j.id === item.id);return job ? { ...job, type: "job", title: job.job_title } : null;}
           else if (item.type === "internship") {const intern = internsRes.data.find(i => i.id === item.id);return intern ? { ...intern, type: "internship", title: intern.internship_title } : null;}
@@ -63,7 +63,7 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [jobsRes, internsRes] = await Promise.all([axios.get("https://job-listing-portal-8.onrender.com/jobs/"),axios.get("https://job-listing-portal-8.onrender.com/internships/")]);
+        const [jobsRes, internsRes] = await Promise.all([axios.get("http://127.0.0.1:8000/jobs/"),axios.get("http://127.0.0.1:8000/internships/")]);
         setJobs(jobsRes.data);
         setInternships(internsRes.data);
       } catch (err) {
