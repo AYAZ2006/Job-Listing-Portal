@@ -6,10 +6,26 @@ import { Typewriter } from "react-simple-typewriter";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import "../index.css";
+function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState(
+    window.innerWidth < 768
+  );
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return isMobile;
+}
 function Dashboard() {
   const [showCursor1, setShowCursor1] = React.useState(true);
   const [showCursor2, setShowCursor2] = React.useState(true);
   const [showCursor3, setShowCursor3] = React.useState(true);
+  const isMobile = useIsMobile();
   const companies = ["Google","Microsoft","Amazon","Meta","Apple","Netflix","Adobe","Salesforce",];
   const logos = [
     { src: "https://imagedelivery.net/L-RRwTsGtjw4XmStu9Y7XA/256211ad-d248-43f6-9361-f9f666b25300/public", alt: "Microsoft" },
@@ -33,53 +49,55 @@ function Dashboard() {
   const Navigate = useNavigate();
   return (
     <div className="w-screen min-h-screen overflow-hidden bg-[url('/image.png')] bg-center bg-cover  text-white">
-      <Parallax pages={4} className="overflow-y-scroll scrollbar-hidden">
+      <Parallax pages={isMobile ? 3 : 4} className="overflow-y-scroll scrollbar-hidden">
         <ParallaxLayer offset={0} speed={0}>
-          <div className="relative h-screen w-full overflow-hidden bg-black bg-cover bg-top animate-bgMove" style={{ backgroundImage: "url('/landing-parallax-1.jpg')" }}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
-            <img src="/office.jpg" alt="Office" className="absolute bottom-[-12%] animate-bottomIn2 z-20"/>
-            <img src="/building.jpg" alt="Building" className="absolute bottom-[-12%] animate-bottomIn1 z-30 w-1/2"/>
-            <div className="absolute top-[40%] right-1/2 translate-x-1/2 -translate-y-1/2 z-30 text-center">
-              <h3 className="text-xl font-light tracking-[15px] animate-textUp1 text-center">
-                <span className="text-white">Find Your </span>
-                <span className="text-black">Dream Job</span>
-              </h3>
-              <h1 className="text-white text-[12rem] font-extrabold uppercase tracking-[40px] mt-[-20px] animate-textUp2">JobLelo</h1>
-            </div>
-            <div className="absolute bottom-[18%] w-full flex justify-center z-30">
-              <p className="text-gray text-sm w-[70%] leading-7 tracking-[1px] text-center animate-textUp3">Find your dream job and take the next step in your career. Explore thousands of opportunities across industries, connect with top companies, and build the future you’ve always envisioned. Whether you're looking for growth, experience, or the perfect fit, your career journey starts here.Your career journey is just beginning. Discover roles that match your skills, grow with inspiring teams, and unlock new possibilities. From internships to full-time positions, find the opportunity that brings out your best.</p>
-            </div>
-            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/login')}>
-              <button className="w-[300px] h-[50px] border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right"></i></button>
-            </div>
-            <div className="absolute top-1/2 w-full flex justify-between px-[5%] text-white/40 text-4xl animate-zoomOut z-30">
-              <i className="fa-solid fa-chevron-left cursor-pointer"></i>
-              <i className="fa-solid fa-chevron-right cursor-pointer"></i>
-            </div>
-          </div>
+          {!isMobile && (
+            <div className="relative h-screen w-full overflow-hidden bg-black bg-cover bg-top animate-bgMove" style={{ backgroundImage: "url('/landing-parallax-1.jpg')" }}>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
+                <img src="/office.jpg" alt="Office" className="absolute bottom-[-12%] animate-bottomIn2 z-20"/>
+                <img src="/building.jpg" alt="Building" className="absolute bottom-[-12%] animate-bottomIn1 z-30 w-1/2"/>
+                <div className=" absolute top-[40%] right-1/2 translate-x-1/2 -translate-y-1/2 z-30 text-center space-y-4 sm:space-y-6 lg:space-y-8">
+                  <h3 className="text-xl font-light tracking-[15px] animate-textUp1">
+                    <span className="text-white">Find Your </span>
+                    <span className="text-black">Dream Job</span>
+                  </h3>
+                  <h1 className="text-white font-extrabold uppercase text-5xl sm:text-7xl md:text-8xl lg:text-[12rem] tracking-[6px] sm:tracking-[12px] lg:tracking-[40px]">JobLelo</h1>
+                </div>
+                <div className="absolute bottom-[18%] w-full flex justify-center z-30">
+                  <p className="w-full sm:w-[85%] lg:w-[70%]text-xs sm:text-smleading-6 sm:leading-7px-4">Find your dream job and take the next step in your career. Explore thousands of opportunities across industries, connect with top companies, and build the future you’ve always envisioned. Whether you're looking for growth, experience, or the perfect fit, your career journey starts here.Your career journey is just beginning. Discover roles that match your skills, grow with inspiring teams, and unlock new possibilities. From internships to full-time positions, find the opportunity that brings out your best.</p>
+                </div>
+                <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/login')}>
+                  <button className="w-[220px] sm:w-[260px] lg:w-[300px] h-[44px] sm:h-[50px] text-xs sm:text-sm border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div className="absolute top-1/2 w-full flex justify-between px-[5%] text-white/40 text-4xl animate-zoomOut z-30">
+                  <i className="fa-solid fa-chevron-left cursor-pointer"></i>
+                  <i className="fa-solid fa-chevron-right cursor-pointer"></i>
+                </div>
+              </div>
+        )}
         </ParallaxLayer>
-        <ParallaxLayer offset={1} speed={0}>
-         <div className="relative h-screen w-full overflow-hidden bg-[#121212] bg-cover bg-top animate-bgMove" style={{ backgroundImage: "url('/landing-parallax-1.jpg')" }}>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
-            <div className="absolute top-[40%] right-1/2 translate-x-1/2 -translate-y-1/2 z-30 text-center">
+        <ParallaxLayer offset={isMobile ? 0 : 1} speed={0}>
+          <div className="relative h-screen w-full overflow-hidden bg-[#121212] bg-cover bg-top animate-bgMove" style={{ backgroundImage: "url('/landing-parallax-1.jpg')" }}>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
+            <div className=" absolute left-1/2 top-1/2  -translate-x-1/2 -translate-y-1/2 px-4 w-full max-w-5xl text-center z-30">
               <h3 className="text-white text-xl font-light tracking-[15px] animate-textUp1">Discover Your Next Opportunity</h3>
-              <h1 className="text-white text-[12rem] font-extrabold uppercase tracking-[40px] mt-[-20px] animate-textUp2">JobLelo</h1>
+              <h1 className="text-white font-extrabold uppercase text-5xl sm:text-7xl md:text-8xl lg:text-[12rem] tracking-[6px] sm:tracking-[12px] lg:tracking-[40px] mt-4 sm:mt-6 lg:mt-8">JobLelo</h1>
             </div>
             <div className="absolute bottom-[18%] w-full flex justify-center z-30">
-              <p className="text-white/70 text-sm w-[70%] leading-7 tracking-[1px] text-center animate-textUp3">JobLelo connects talented professionals with their dream roles across industries. Browse thousands of listings, discover exciting opportunities, and take the next step in your career. From internships to full-time positions, find the perfect fit for your skills and ambitions.</p>
+              <p className=" w-full sm:w-[85%] lg:w-[70%] text-xs sm:text-sm leading-6 sm:leading-7 px-4 text-center text-white/80"> JobLelo connects talented professionals with their dream roles across industries. Browse thousands of listings, discover exciting opportunities, and take the next step in your career.</p>
             </div>
-            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/login')}>
-              <button className="w-[300px] h-[50px] border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right"></i></button>
+            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={() => Navigate("/login")}>
+              <button className=" w-[220px] sm:w-[260px] lg:w-[300px] h-[44px] sm:h-[50px] text-xs sm:text-sm border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right" /></button>
             </div>
-            <div className="absolute top-1/2 w-full flex justify-between px-[5%] text-white/40 text-4xl animate-zoomOut z-30">
-              <i className="fa-solid fa-chevron-left cursor-pointer"></i>
-              <i className="fa-solid fa-chevron-right cursor-pointer"></i>
+            <div className=" hidden lg:flex absolute top-1/2 w-full justify-between px-[5%] text-4xl text-white/40 animate-zoomOut z-30">
+              <i className="fa-solid fa-chevron-left cursor-pointer" />
+              <i className="fa-solid fa-chevron-right cursor-pointer" />
             </div>
           </div>
         </ParallaxLayer>
-        <ParallaxLayer offset={2} speed={0} className="flex flex-col items-center justify-center h-screen bg-black">
+        <ParallaxLayer offset={isMobile ? 1 : 2} speed={0} className="flex flex-col items-center justify-center h-screen bg-black">
           <SplittingText text="Your future starts here" type="words" className="text-white/80 text-3xl mt-160 sm:mt-0 font-bold" motionVariants={{initial: { opacity: 0, x: 100 },animate: { opacity: 1, x: 0 },transition: { duration: 0.9 },stagger: 0.1,}} inView={true}/>
-          <h1 className="text-5xl font-extrabold text-white leading-snug max-w-3xl mx-auto text-center space-y-2 mt-5">
+          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-extrabold px-4 text-center text-white leading-snug max-w-3xl mx-auto space-y-2 mt-5">
             <span className="block text-yellow-400">
               <Typewriter words={["Opportunity is missed by most people"]} loop={1} cursor={showCursor1} cursorStyle="" typeSpeed={70} deleteSpeed={50} delaySpeed={1000} onLoopDone={() => setShowCursor1(false)}/>
             </span>
@@ -101,9 +119,10 @@ function Dashboard() {
               <ScrambledText className="text-center inline-block w-20" radius={120} duration={1} speed={0.6} scrambleChars="!@#$%^&*()_+" style={{ color: 'currentColor', fontSize: 'clamp(0.65rem, 1.5vw, 1rem)', fontFamily: 'inherit' }}>Support</ScrambledText>
             </nav>
           </div>
-          <h1 className="fixed mt-170 text-5xl">Our Alumini Works At</h1>
+          <h1 className="relative lg:fixedmt-20 lg:mt-170text-2xl sm:text-3xl lg:text-5xltext-center">Our Alumni Works At</h1>
+
         </ParallaxLayer>
-        <ParallaxLayer offset={3} speed={0} className="relative h-screen">
+        <ParallaxLayer offset={isMobile ? 2 : 3} speed={0} className="relative h-screen">
           <div className="absolute inset-0 bg-[#0A0A0A] z-10">
             <section className="py-16 overflow-hidden bg-black backdrop-blur-sm">
               <style jsx>{`
