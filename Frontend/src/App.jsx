@@ -1,5 +1,5 @@
 import React,{useEffect} from "react";
-import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import SigninUI from "./components/SigninUi.jsx";
@@ -33,24 +33,19 @@ import Settings from "./components/Settings.jsx";
 import CommonFilters from "./components/CommonFilters.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 function Layout() {
   const location = useLocation();
   const user = localStorage.getItem("user_type");
-
   useEffect(() => {
     if (user && location.pathname === "/") {
-      if (user === "candidate") window.location.replace("/#/home");
-      else if (user === "recruiter") window.location.replace("/#/admin");
+      if (user === "candidate") window.location.replace("/home");
+      else if (user === "recruiter") window.location.replace("/admin");
     }
   }, [user, location.pathname]);
-
-  const publicNavbarHideRoutes = ["/login","/signup","/candidate","/recruiter","/candidate-login","/recruiter-login"];
+  const publicNavbarHideRoutes = ["/login","/signup","/candidate","/recruiter","/candidate-login","/recruiter-login",];
   const loggedInNavbarRoutes = ["/home","/jobs","/internships","/settings","/applications","/profile","/admin","/watchlist","/contact"];
-
   const showPublicNavbar = publicNavbarHideRoutes.includes(location.pathname);
   const showLoggedInNavbar = loggedInNavbarRoutes.includes(location.pathname) || location.pathname.startsWith("/jobs/") || location.pathname.startsWith("/internships/");
-
   return (
     <>
       {["/admin", "/post", "/evaluate","/manage","/edit"].includes(location.pathname) && <ANavbar />}
@@ -91,9 +86,13 @@ function Layout() {
 
 export default function App() {
   return(
-    <Router>
+    <>
       <Layout />
       <ToastContainer />
-    </Router>
+    </>
+
   )
 }
+
+
+
