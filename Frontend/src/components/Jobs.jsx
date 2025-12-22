@@ -15,7 +15,7 @@ export default function Jobs() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({workMode: "",workType: "",datePosted: "",location: "",keywords: "",});
   const email = localStorage.getItem("user_email") || "";
-  useEffect(() => {axios.get("http://127.0.0.1:8000/jobs/").then((res) => {setJobs(res.data.map(job => ({ ...job, is_favorite: job.is_favorite || false })));}).catch((err) => {toast.error("Failed to load jobs");}).finally(() => setLoading(false));}, []);
+  useEffect(() => {axios.get("https://jobchahiye.vercel.app/jobs/").then((res) => {setJobs(res.data.map(job => ({ ...job, is_favorite: job.is_favorite || false })));}).catch((err) => {toast.error("Failed to load jobs");}).finally(() => setLoading(false));}, []);
   function daysAgo(dateString) {
     const posted = new Date(dateString);
     const now = new Date();
@@ -25,7 +25,7 @@ export default function Jobs() {
 
   const toggleFavorite = async (jobId) => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/favorite/", {job_id: jobId,email: email});
+      const res = await axios.post("https://jobchahiye.vercel.app/favorite/", {job_id: jobId,email: email});
       const isFav = res.data.favorite;
       setJobs((prev) =>prev.map((job) =>job.id === jobId ? { ...job, is_favorite: isFav } : job));
     } catch (error) {

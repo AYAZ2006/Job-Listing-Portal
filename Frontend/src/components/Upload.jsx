@@ -20,7 +20,7 @@ export default function Upload() {
     formData.append("email",email); 
     formData.append("file", file);
     try {
-      const res = await fetch("http://127.0.0.1:8000/upload-resume/", {method: "POST",body: formData,});
+      const res = await fetch("https://jobchahiye.vercel.app/upload-resume/", {method: "POST",body: formData,});
       const data = await res.json();
       if (res.ok) {
         toast.success("Uploaded successfully");

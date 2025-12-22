@@ -18,7 +18,7 @@ export default function CandidateLogin() {
     }
     setLoading(true);
     try {
-      const res = await axios.post('http://127.0.0.1:8000/recruiter/login/', { email:email, password:password });
+      const res = await axios.post('https://jobchahiye.vercel.app/recruiter/login/', { email:email, password:password });
       toast.success(res.data.message);
       localStorage.setItem("user_type", "recruiter");
       localStorage.setItem("recruiter_email", email);

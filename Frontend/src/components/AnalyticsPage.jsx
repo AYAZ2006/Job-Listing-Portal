@@ -17,8 +17,8 @@ export default function AnalyticsPage() {
     const fetchData = async () => {
       const username = localStorage.getItem("username");
       try {
-        const jobsRes = await axios.get(`http://127.0.0.1:8000/my-jobs/?username=${username}`);
-        const internshipsRes = await axios.get(`http://127.0.0.1:8000/my-internships/?username=${username}`);
+        const jobsRes = await axios.get(`https://jobchahiye.vercel.app/my-jobs/?username=${username}`);
+        const internshipsRes = await axios.get(`https://jobchahiye.vercel.app/my-internships/?username=${username}`);
         setJobs(jobsRes.data);
         setInternships(internshipsRes.data);
         const allYears = new Set([2025]);
@@ -36,7 +36,7 @@ export default function AnalyticsPage() {
   useEffect(() => {
     const fetchEvaluatedCount = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/count/");
+        const res = await axios.get("https://jobchahiye.vercel.app/count/");
         setStudentsEvaluated(res.data.students_evaluated || 0);
       } catch (err) {
         console.error("Failed to fetch evaluated count", err);

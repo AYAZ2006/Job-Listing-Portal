@@ -24,9 +24,9 @@ function Edit() {
     formData.set("work_mode", workMode);
     setLoading(true);
     try {
-      const deleteUrl = type === "job" ? `http://127.0.0.1:8000/jobs/${item.id}/` : `http://127.0.0.1:8000/internships/${item.id}/`;
+      const deleteUrl = type === "job" ? `https://jobchahiye.vercel.app/jobs/${item.id}/` : `https://jobchahiye.vercel.app/internships/${item.id}/`;
       await axios.delete(deleteUrl);
-      const postUrl = type === "job" ? "http://127.0.0.1:8000/jobs/" : "http://127.0.0.1:8000/internships/";
+      const postUrl = type === "job" ? "https://jobchahiye.vercel.app/jobs/" : "https://jobchahiye.vercel.app/internships/";
       await axios.post(postUrl, formData, {headers: { "Content-Type": "multipart/form-data" },});
       toast.success("Updated successfully!");
       navigate("/manage");

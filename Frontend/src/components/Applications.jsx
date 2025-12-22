@@ -26,9 +26,9 @@ export default function Applications() {
 
   const fetchAppliedJobs = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/applied-jobs/", { email });
+      const res = await axios.post("https://jobchahiye.vercel.app/applied-jobs/", { email });
       const appliedData = res.data.applied_jobs || [];
-      const jobsResponse = await axios.get("http://127.0.0.1:8000/jobs/");
+      const jobsResponse = await axios.get("https://jobchahiye.vercel.app/jobs/");
       const allJobs = jobsResponse.data;
       const jobsWithDetails = appliedData.map(item => {
           const job = allJobs.find(j => j.id === item.job_id);
@@ -44,9 +44,9 @@ export default function Applications() {
   };
   const fetchAppliedInternships = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/applied-internships/", { email });
+      const res = await axios.post("https://jobchahiye.vercel.app/applied-internships/", { email });
       const appliedData = res.data.applied_internships || [];
-      const all = await axios.get("http://127.0.0.1:8000/internships/");
+      const all = await axios.get("https://jobchahiye.vercel.app/internships/");
       const allData = all.data;
       const formatted = appliedData.map(item => {
           const match = allData.find(i => i.id === item.internship_id);

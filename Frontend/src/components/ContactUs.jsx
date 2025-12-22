@@ -20,7 +20,7 @@ export default function ContactUs() {
     }
     setLoading(true);
     try {
-      await axios.post("http://127.0.0.1:8000/contact/", formData);
+      await axios.post("https://jobchahiye.vercel.app/contact/", formData);
       toast.success("Your message has been sent successfully!");
       setFormData({name: "",email: "",phone: "",company: "",message: "",terms: false,   });
       setLoading(false);

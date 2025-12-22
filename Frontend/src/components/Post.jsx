@@ -20,7 +20,7 @@ function Post() {
     formData.set("work_mode", workMode);
     setLoading(true);
     try {
-        const response = await axios.post("http://127.0.0.1:8000/jobs/",formData,{headers: { "Content-Type": "multipart/form-data" },});
+        const response = await axios.post("https://jobchahiye.vercel.app/jobs/",formData,{headers: { "Content-Type": "multipart/form-data" },});
         toast.success("Job posted successfully!");
         form.reset();
         navigate("/manage");
@@ -41,7 +41,7 @@ function Post() {
         formData.set("work_mode", workMode);
         setLoading(true);
         try {
-            const response = await axios.post("http://127.0.0.1:8000/internships/",formData,{headers: { "Content-Type": "multipart/form-data" },});
+            const response = await axios.post("https://jobchahiye.vercel.app/internships/",formData,{headers: { "Content-Type": "multipart/form-data" },});
             toast.success("Internship posted successfully!");
             form.reset();
             navigate("/manage");

@@ -19,8 +19,8 @@ export default function JobDetail() {
   const [applied, setApplied] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  useEffect(() => {axios.get(`http://127.0.0.1:8000/jobs/${id}/`).then((res) => setJob(res.data)).catch((err) => console.error(err));}, [id]);
-  useEffect(() => {axios.post("http://127.0.0.1:8000/apply-job/", {job_id: id,email: localStorage.getItem("user_email"),check_only: true}).then((res) => {setApplied(res.data.applied);}).catch(() => {});}, [id]);
+  useEffect(() => {axios.get(`https://jobchahiye.vercel.app/jobs/${id}/`).then((res) => setJob(res.data)).catch((err) => console.error(err));}, [id]);
+  useEffect(() => {axios.post("https://jobchahiye.vercel.app/apply-job/", {job_id: id,email: localStorage.getItem("user_email"),check_only: true}).then((res) => {setApplied(res.data.applied);}).catch(() => {});}, [id]);
   if (!job) return <p className="text-center text-gray-400">Loading...</p>;
   function daysAgo(dateString) {
     const posted = new Date(dateString);
@@ -30,7 +30,7 @@ export default function JobDetail() {
   }
   const applyJob = () => {
     setLoading(true);
-    axios.post("http://127.0.0.1:8000/apply-job/", {job_id: id,email: localStorage.getItem("user_email"),})
+    axios.post("https://jobchahiye.vercel.app/apply-job/", {job_id: id,email: localStorage.getItem("user_email"),})
       .then(() => {
         toast.success("Applied successfully");
         setApplied(true);
@@ -45,7 +45,7 @@ export default function JobDetail() {
 
   const withdrawJob = () => {
     setLoading(true);
-    axios.delete("http://127.0.0.1:8000/apply-job/", {data: {job_id: id,email: localStorage.getItem("user_email"),},})
+    axios.delete("https://jobchahiye.vercel.app/apply-job/", {data: {job_id: id,email: localStorage.getItem("user_email"),},})
       .then(() => {
         toast.success("Withdrawn successfully");
         setApplied(false);

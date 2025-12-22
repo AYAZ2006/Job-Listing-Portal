@@ -83,7 +83,7 @@ export default function Settings() {
   };
   const loadResume = () => {
   if (!email) return;
-  fetch(`http://127.0.0.1:8000/view-resume/?email=${email}`).then(res => {
+  fetch(`https://jobchahiye.vercel.app/view-resume/?email=${email}`).then(res => {
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     })
@@ -97,10 +97,10 @@ export default function Settings() {
   useEffect(() => {loadResume();}, []);
   const handleDownload = async (resumeId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/${resumeId}/download/`);
+      const response = await fetch(`https://jobchahiye.vercel.app/${resumeId}/download/`);
       if (!response.ok) throw new Error("Failed to fetch download URL");
       const data = await response.json();
-      const downloadUrl = `http://127.0.0.1:8000/${data.download_url}`;
+      const downloadUrl = `${data.download_url}`;
       const link = document.createElement("a");
       link.href = downloadUrl;
       link.download = data.download_url.split("/").pop() || "resume.pdf";
@@ -122,7 +122,7 @@ export default function Settings() {
       return;
     }
     try {
-      const res = await fetch("http://127.0.0.1:8000/delete-account/", {method: "DELETE",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email })});
+      const res = await fetch("https://jobchahiye.vercel.app/delete-account/", {method: "DELETE",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email })});
       if (res.ok) {
         toast.success("Account deleted permanently");
         localStorage.clear();
@@ -141,13 +141,13 @@ export default function Settings() {
     const newP = document.getElementById("newPass").value;
     const conf = document.getElementById("confirmPass").value;
     if (newP !== conf) return toast.error("Passwords don't match");
-    const res = await fetch("http://127.0.0.1:8000/change-password/", {method: "POST",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email, current_password: curr, new_password: newP, confirm_password: conf })});
+    const res = await fetch("https://jobchahiye.vercel.app/change-password/", {method: "POST",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email, current_password: curr, new_password: newP, confirm_password: conf })});
     const data = await res.json();
     res.ok ? toast.success("Password changed!") : toast.error(data.error);
   };
   useEffect(() => {
     if (!email) return;
-    fetch(`http://127.0.0.1:8000/profile/?email=${email}`).then(res => res.json()).then(data => {
+    fetch(`https://jobchahiye.vercel.app/profile/?email=${email}`).then(res => res.json()).then(data => {
         if (data.email) {setProfile(data);
           if (Array.isArray(data.skills)) {setSkills(data.skills.map((name, i) => ({ id: Date.now() + i, name })));}
           if (Array.isArray(data.experiences)) {setExperiences(data.experiences.map((exp, i) => ({ ...exp, id: exp.id || Date.now() + i })));}
@@ -157,7 +157,7 @@ export default function Settings() {
     const handleSave = () => {
       setLoading(true);
       const payload = {...profile, skills: skills.map(s => s.name), experiences: experiences };
-      fetch("http://127.0.0.1:8000/profile/", {
+      fetch("https://jobchahiye.vercel.app/profile/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -175,7 +175,7 @@ export default function Settings() {
           setLoading(false);
       });
   };
-  const tabs = ["Account","Notifications","Sharing","Skills","Career Highlights","Security & Privacy"];
+  const tabs = [{ name: "Account", mobile: true },{ name: "Notifications", mobile: false },{ name: "Sharing", mobile: false },{ name: "Skills", mobile: true },{ name: "Career Highlights", mobile: true },{ name: "Security & Privacy", mobile: true },];
   return (
     <>
       {loading && (
@@ -242,9 +242,9 @@ export default function Settings() {
           <div className="sticky top-0 z-20 bg-[#0e0e0e] pt-6 pb-4 text-center">
             <h1 className="text-2xl sm:text-3xl font-semibold mb-2">Settings</h1>
             <h1 className="text-xs sm:text-sm mb-6 text-gray-300">Manage your account settings and preferences</h1>
-            <div className="flex justify-center gap-2 sm:gap-3 mb-4 overflow-x-auto hide-scrollbar">
+            <div className="flex gap-2 sm:gap-3 mb-4 overflow-x-auto hide-scrollbar sm:justify-center">
               {tabs.map((tab) => (
-                <button key={tab} className={`px-3 sm:px-4 py-2 rounded-full cursor-pointer text-xs sm:text-sm whitespace-nowrap ${ activeTab === tab ? "bg-white text-black": "bg-[#1a1a1a] text-gray-400 border border-white/10"}`}onClick={() => setActiveTab(tab)}>{tab}</button>
+                <button key={tab.name} className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm whitespace-nowrap cursor-pointer ${!tab.mobile ? "hidden sm:inline-flex" : ""} ${activeTab === tab.name ? "bg-white text-black" : "bg-[#1a1a1a] text-gray-400 border border-white/10"}`} onClick={() => setActiveTab(tab.name)} >{tab.name}</button>
               ))}
               <button onClick={isEditing ? handleSave : toggleEdit} className="px-4 cursor-pointer py-2 rounded-full bg-blue-500 text-white">{isEditing ? "Save" : "Edit"}</button>
             </div>
@@ -253,17 +253,21 @@ export default function Settings() {
             <>
                 <div className="bg-[#151515] rounded-xl p-6 border border-white/10 mb-8">
                 <h2 className="text-lg font-semibold mb-4">Profile</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  <div className="flex justify-center sm:col-span-2 md:col-span-1 md:row-span-2">
+                    <FaUserCircle className="text-gray-500" size={70} />
+                  </div>
                   <div>
                     <label className="text-sm text-gray-400">Name</label>
-                    <input disabled={!isEditing} type="text" value={profile.name} onChange={(e) => handleChange("name", e.target.value)} className={`w-full bg-[#1d1d1d] rounded-md p-2 mt-1 border border-white/10 text-white ${!isEditing ? "opacity-50 cursor-not-allowed" : ""}`} placeholder="Your name"/></div>
+                    <input disabled={!isEditing} type="text" value={profile.name} onChange={(e) => handleChange("name", e.target.value)} className={`w-full bg-[#1d1d1d] rounded-md p-2 mt-1 border border-white/10 text-white ${ !isEditing ? "opacity-50 cursor-not-allowed" : ""}`} placeholder="Your name"/>
+                  </div>
                   <div>
                     <label className="text-sm text-gray-400">Surname</label>
-                    <input disabled={!isEditing} type="text" value={profile.surname} onChange={(e) => handleChange("surname", e.target.value)} className={`w-full bg-[#1d1d1d] rounded-md p-2 mt-1 border border-white/10 text-white ${!isEditing ? "opacity-50 cursor-not-allowed" : ""}`} placeholder="Your surname"/></div>
-                  <div className="flex items-center justify-center"><FaUserCircle className="text-gray-500" size={70} /></div>
-                  <div className="col-span-2">
+                    <input disabled={!isEditing} type="text" value={profile.surname} onChange={(e) => handleChange("surname", e.target.value)} className={`w-full bg-[#1d1d1d] rounded-md p-2 mt-1 border border-white/10 text-white ${ !isEditing ? "opacity-50 cursor-not-allowed" : "" }`} placeholder="Your surname"/>
+                  </div>
+                  <div className="sm:col-span-2 md:col-span-2">
                     <label className="text-sm text-gray-400">Email</label>
-                    <input disabled type="email" value={profile.email} className={`w-full bg-[#1d1d1d] rounded-md p-2 mt-1 border border-white/10 text-white ${!isEditing ? "opacity-50 cursor-not-allowed" : ""}`} placeholder="you@example.com"/>
+                    <input disabled type="email" value={profile.email} className="w-full bg-[#1d1d1d] rounded-md p-2 mt-1 border border-white/10 text-white opacity-50 cursor-not-allowed" placeholder="you@example.com"/>
                   </div>
                 </div>
               </div>
