@@ -25,6 +25,7 @@ class JobSerializer(serializers.ModelSerializer):
         read_only_fields = ["created_by"]
 
 class InternshipSerializer(serializers.ModelSerializer):
+    company_logo = serializers.ImageField(use_url=True)
     class Meta:
         model = Internship
         fields = '__all__'
