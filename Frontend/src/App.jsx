@@ -1,5 +1,5 @@
-import React,{useEffect} from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import SigninUI from "./components/SigninUi.jsx";
@@ -33,6 +33,7 @@ import Settings from "./components/Settings.jsx";
 import CommonFilters from "./components/CommonFilters.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 function Layout() {
   const location = useLocation();
   const user = localStorage.getItem("user_type");
@@ -86,13 +87,9 @@ function Layout() {
 
 export default function App() {
   return(
-    <>
+    <Router basename={process.env.PUBLIC_URL || '/'}>
       <Layout />
       <ToastContainer />
-    </>
-
+    </Router>
   )
 }
-
-
-
