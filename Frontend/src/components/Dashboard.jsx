@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import { Parallax, ParallaxLayer } from "@react-spring/parallax";
 import SplittingText from "@/components/ui/shadcn-io/SplittingText.jsx";
 import ScrambledText from "@/components/ui/shadcn-io/scrambled-text/index.jsx";
@@ -49,7 +49,7 @@ function Dashboard() {
             <div className="absolute bottom-[18%] w-full flex justify-center z-30">
               <p className="text-gray text-sm w-[70%] leading-7 tracking-[1px] text-center animate-textUp3">Find your dream job and take the next step in your career. Explore thousands of opportunities across industries, connect with top companies, and build the future you’ve always envisioned. Whether you're looking for growth, experience, or the perfect fit, your career journey starts here.Your career journey is just beginning. Discover roles that match your skills, grow with inspiring teams, and unlock new possibilities. From internships to full-time positions, find the opportunity that brings out your best.</p>
             </div>
-            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/login')}>
+            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/#/login')}>
               <button className="w-[300px] h-[50px] border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right"></i></button>
             </div>
             <div className="absolute top-1/2 w-full flex justify-between px-[5%] text-white/40 text-4xl animate-zoomOut z-30">
@@ -68,7 +68,7 @@ function Dashboard() {
             <div className="absolute bottom-[18%] w-full flex justify-center z-30">
               <p className="text-white/70 text-sm w-[70%] leading-7 tracking-[1px] text-center animate-textUp3">JobLelo connects talented professionals with their dream roles across industries. Browse thousands of listings, discover exciting opportunities, and take the next step in your career. From internships to full-time positions, find the perfect fit for your skills and ambitions.</p>
             </div>
-            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/login')}>
+            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={()=>Navigate('/#/login')}>
               <button className="w-[300px] h-[50px] border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right"></i></button>
             </div>
             <div className="absolute top-1/2 w-full flex justify-between px-[5%] text-white/40 text-4xl animate-zoomOut z-30">
