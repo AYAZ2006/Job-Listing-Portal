@@ -79,14 +79,14 @@ function Dashboard() {
         <ParallaxLayer offset={isMobile ? 0 : 1} speed={0}>
           <div className="relative h-screen w-full overflow-hidden bg-[#121212] bg-cover bg-top animate-bgMove" style={{ backgroundImage: "url('/landing-parallax-1.jpg')" }}>
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
-            <div className=" absolute left-1/2 top-1/2  -translate-x-1/2 -translate-y-1/2 px-4 w-full max-w-5xl text-center z-30">
+            <div className=" absolute left-1/2 top-[38%] sm:top-[42%] -translate-x-1/2 -translate-y-1/2 px-4 w-full max-w-5xl text-center z-30">
               <h3 className="text-white text-xl font-light tracking-[15px] animate-textUp1">Discover Your Next Opportunity</h3>
               <h1 className="text-white font-extrabold uppercase text-5xl sm:text-7xl md:text-8xl lg:text-[12rem] tracking-[6px] sm:tracking-[12px] lg:tracking-[40px] mt-4 sm:mt-6 lg:mt-8">JobLelo</h1>
             </div>
-            <div className="absolute bottom-[18%] w-full flex justify-center z-30">
+            <div className="absolute bottom-[26%] sm:bottom-[18%] w-full flex justify-center z-30">
               <p className=" w-full sm:w-[85%] lg:w-[70%] text-xs sm:text-sm leading-6 sm:leading-7 px-4 text-center text-white/80"> JobLelo connects talented professionals with their dream roles across industries. Browse thousands of listings, discover exciting opportunities, and take the next step in your career.</p>
             </div>
-            <div className="absolute bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={() => Navigate("/login")}>
+            <div className=" absolute bottom-[18%] sm:bottom-[8%] w-full flex justify-center z-30 animate-textUp4" onClick={() => Navigate('/login')}>
               <button className=" w-[220px] sm:w-[260px] lg:w-[300px] h-[44px] sm:h-[50px] text-xs sm:text-sm border border-white/80 rounded-full text-white/80 tracking-[3px] uppercase flex items-center justify-center gap-2 transition hover:bg-white/80 hover:text-gray-800">Explore More <i className="fa-solid fa-arrow-right" /></button>
             </div>
             <div className=" hidden lg:flex absolute top-1/2 w-full justify-between px-[5%] text-4xl text-white/40 animate-zoomOut z-30">
