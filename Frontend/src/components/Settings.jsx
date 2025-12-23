@@ -534,39 +534,41 @@ export default function Settings() {
         )}
         {activeTab === "Career Highlights" && (
           <>
-            <div className="bg-[#151515] rounded-xl p-6 border border-white/10 mb-8">
+            <div className="bg-[#151515] rounded-xl p-4 sm:p-6 border border-white/10 mb-8">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold">Experience</h2>
+                <h2 className="text-base sm:text-lg font-semibold">Experience</h2>
                 {isEditing && (
-                  <button onClick={() => setExperiences([...experiences, getEmptyExperience()])} className="text-white text-sm font-medium transition">+ Add Experience</button>
+                  <button onClick={() =>setExperiences([...experiences, getEmptyExperience()])} className="text-white text-xs sm:text-sm font-medium">+ Add Experience</button>
                 )}
               </div>
               {experiences.length === 0 ? (
-                <p className="text-gray-500 text-center py-12">No experience added yet</p>
+                <p className="text-gray-500 text-center py-10 sm:py-12">No experience added yet</p>
               ) : (
                 <div className="relative">
-                  <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-white/10"></div>
+                  <div className="absolute left-5 sm:left-8 top-0 bottom-0 w-0.5 bg-white/10"></div>
                   {experiences.map((exp, index) => (
-                    <div key={exp.id} className="relative flex gap-6 mb-10 last:mb-0">
-                      <div className="absolute left-8 w-4 h-4 bg-gray-400 rounded-full -translate-x-1/2 ring-4 ring-black z-10"></div>
-                      <div className="flex-1 ml-16">
+                    <div key={exp.id} className="relative flex gap-4 sm:gap-6 mb-10 last:mb-0">
+                      <div className="absolute left-5 sm:left-8 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-gray-400 rounded-full -translate-x-1/2 ring-4 ring-black z-10"></div>
+                      <div className="flex-1 ml-10 sm:ml-16">
                         {isEditing ? (
                           <div className="space-y-3">
-                            <input value={exp.role} onChange={(e) => updateExperience(index, "role", e.target.value)} placeholder="Job Title" className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-4 py-2 text-white" />
-                            <input value={exp.company} onChange={(e) => updateExperience(index, "company", e.target.value)} placeholder="Company" className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-4 py-2 text-white" />
-                            <div className="flex gap-3">
-                              <input type="month" value={exp.start} onChange={(e) => updateExperience(index, "start", e.target.value)} className="bg-[#1d1d1d] border border-white/10 rounded-lg px-4 py-2 text-white" />
-                              <input type="month" value={exp.end} onChange={(e) => updateExperience(index, "end", e.target.value)} className="bg-[#1d1d1d] border border-white/10 rounded-lg px-4 py-2 text-white" />
+                            <input value={exp.role} onChange={(e) =>updateExperience(index, "role", e.target.value)} placeholder="Job Title" className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white"/>
+                            <input value={exp.company} onChange={(e) =>updateExperience(index, "company", e.target.value)} placeholder="Company" className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white"/>
+                            <div className="flex flex-col sm:flex-row gap-3">
+                              <input type="month" value={exp.start} onChange={(e) =>updateExperience(index, "start", e.target.value)} className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white"/>
+                              <input type="month" value={exp.end} onChange={(e) =>updateExperience(index, "end", e.target.value)} className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white"/>
                             </div>
-                            <textarea value={exp.description} onChange={(e) => updateExperience(index, "description", e.target.value)} placeholder="Description" rows="3" className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-4 py-2 text-white" />
-                            <button onClick={() => removeExperience(index)} className="text-red-500 text-sm">Remove</button>
+                            <textarea value={exp.description} onChange={(e) =>updateExperience(index, "description", e.target.value)} placeholder="Description" rows={3} className="w-full bg-[#1d1d1d] border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white resize-none"/>
+                            <button onClick={() => removeExperience(index)} className="text-red-500 text-xs sm:text-sm">Remove</button>
                           </div>
                         ) : (
                           <div>
-                            <h3 className="font-semibold text-white">{exp.role || "Job Title"}</h3>
-                            <p className="text-white">{exp.company}</p>
-                            <p className="text-gray-500 text-sm">{exp.start} – {exp.end || "Present"}</p>
-                            {exp.description && <p className="text-gray-300 mt-2 text-sm">{exp.description}</p>}
+                            <h3 className="font-semibold text-white text-sm sm:text-base">{exp.role || "Job Title"}</h3>
+                            <p className="text-white text-sm">{exp.company}</p>
+                            <p className="text-gray-500 text-xs sm:text-sm">{exp.start} – {exp.end || "Present"}</p>
+                            {exp.description && (
+                              <p className="text-gray-300 mt-2 text-sm">{exp.description}</p>
+                            )}
                           </div>
                         )}
                       </div>
