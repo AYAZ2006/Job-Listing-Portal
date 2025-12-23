@@ -37,7 +37,7 @@ export default function ContactUs() {
         </div>
       )}
       <div className="w-full min-h-screen bg-[#0e0e0e] text-white flex flex-col items-center py-16 px-4">
-        <h1 className="text-4xl font-extrabold text-white mb-3 tracking-wide mt-10">LET'S GET IN TOUCH</h1>
+        <h1 className="text-4xl font-extrabold text-white mb-3 tracking-wide">LET'S GET IN TOUCH</h1>
         <p className="text-gray-400 text-center max-w-xl mb-12">Can't find what you're looking for? Contact us and we'll get back to you shortly.</p>
         <form className="w-full max-w-xl space-y-6" onSubmit={handleSubmit}>
           <div>
