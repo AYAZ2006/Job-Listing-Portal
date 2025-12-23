@@ -75,27 +75,29 @@ export default function InternshipDetail() {
       )}
       <div className="min-h-screen flex items-center justify-center px-6 py-12 bg-[radial-gradient(circle_at_10%_10%,rgba(255,255,255,0.02),transparent_12%),linear-gradient(180deg,#0f0f0f,#060606)]">
         <div className="w-full max-w-3xl bg-[linear-gradient(180deg,rgba(26,26,26,0.95),rgba(18,18,18,0.95))] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.02)] border border-white/5 flex flex-col gap-4 mt-13">
-          <header className="flex justify-between items-center gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-[linear-gradient(135deg,#1c1c1c,#0f0f0f)] shadow-inner border border-white/5 overflow-hidden">
+          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 sm:gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
+              <div className="w-20 h-20 sm:w-16 sm:h-16 rounded-xl bg-[linear-gradient(135deg,#1c1c1c,#0f0f0f)] shadow-inner border border-white/5 overflow-hidden flex-shrink-0">
                 <img src={internship.company_logo} alt={internship.company_name} className="w-full h-full object-cover rounded-xl"/>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-white">{internship.job_title}</h1>
-                <p className="text-sm text-gray-400">{internship.company_name}</p>
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl sm:text-xl font-bold text-white">{internship.job_title}</h1>
+                <p className="text-base sm:text-sm text-gray-400">{internship.company_name}</p>
               </div>
             </div>
-            <div className="flex items-center">
-              <button className="px-6 py-2 rounded-lg font-semibold bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow" onClick={() => {
+            <div className="w-full sm:w-auto flex justify-center sm:justify-end">
+              <button className="w-full sm:w-auto px-8 py-3 sm:px-6 sm:py-2 rounded-lg font-semibold bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow text-lg sm:text-base" onClick={() => {
                   if (profileCompletion < 90) {
                     toast.error(
                       <div className="flex flex-col gap-2">
                         <div className="font-bold">Profile Incomplete</div>
-                        <div className="text-sm opacity-90">You need <strong>90%</strong> profile completion to apply.<br /> Current: <strong className="text-yellow-300">{profileCompletion}%</strong></div>
+                        <div className="text-sm opacity-90">You need <strong>90%</strong> profile completion to apply.<br />Current: <strong className="text-yellow-300">{profileCompletion}%</strong></div>
                         <button onClick={() => navigate("/settings")} className="mt-2 px-4 py-1.5 bg-[linear-gradient(180deg,#2a2a2a,#141414)] text-white cursor-pointer text-xs font-bold rounded-md hover:bg-gray-200 transition">Complete Profile Now</button>
                       </div>,
-                      { position: "top-center", autoClose: 7000, closeOnClick: false });return;}applied ? withdrawJob() : applyJob();}}>{applied ? "Withdraw" : "Apply Now"}
-              </button>
+                      {position: "top-center",autoClose: 7000,closeOnClick: false,});
+                    return;
+                  }
+                  applied ? withdrawJob() : applyJob();}}>{applied ? "Withdraw" : "Apply Now"}</button>
             </div>
           </header>
           <section className="border-t border-white/10 pt-4">
