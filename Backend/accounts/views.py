@@ -335,7 +335,7 @@ class ContactView(APIView):
                     "One of our support members will get back to you as soon as possible.\n\n"
                     "In the meantime, feel free to explore our platform for job listings, internships, "
                     "and other opportunities tailored to your needs.\n\n"
-                    "Check out https://localhost:5173 while we resolve your request."
+                    "Check out https://ev-route-finder.vercel.app/ while we resolve your request."
                 ),from_email="hajrasultana7075@gmail.com",recipient_list=[email],fail_silently=False,)
             return Response({"message": "Message received and email sent"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
