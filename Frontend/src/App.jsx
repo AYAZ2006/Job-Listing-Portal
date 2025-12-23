@@ -49,8 +49,8 @@ function Layout() {
   return (
     <>
       {["/admin", "/post", "/evaluate","/manage","/edit"].includes(location.pathname) && <ANavbar />}
-      {!showPublicNavbar && !showLoggedInNavbar && !["/admin", "/post", "/evaluate","/manage","/upload","/edit","/profile-download"].includes(location.pathname) && (<Navbar />)}
-      {showLoggedInNavbar && !["/admin", "/post", "/evaluate","/manage","/profile-download"].includes(location.pathname) && (<CNavbar />)}
+      {!showPublicNavbar && !showLoggedInNavbar && !["/admin", "/post", "/evaluate","/manage","/upload","/edit","/profile-download","/contact"].includes(location.pathname) && (<Navbar />)}
+      {showLoggedInNavbar && !["/admin", "/post", "/evaluate","/manage","/profile-download","/contact"].includes(location.pathname) && (<CNavbar />)}
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/signup" element={<SigninUI />} />
