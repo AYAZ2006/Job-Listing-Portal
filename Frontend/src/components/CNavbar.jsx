@@ -89,7 +89,7 @@ export default function CNavbar() {
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User" className="w-14 h-14 rounded-full object-cover border border-white/20"/>
             <div>
               <div className="font-semibold">{username}</div>
-              <div className="text-xs opacity-60">{email}</div>
+              <div className="text-xs sm:text-sm opacity-60 break-all">{email}</div>
             </div>
           </div>
           <button className="w-full py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition flex items-center justify-center gap-2 cursor-pointer" onClick={()=>navigate('/settings')}><Edit3 size={16}/>Edit</button>
