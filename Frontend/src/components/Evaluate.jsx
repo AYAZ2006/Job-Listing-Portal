@@ -90,24 +90,26 @@ function Evaluate() {
             const currentStatus = statusOptions.find(s => s.value === app.status) || statusOptions[0];
             return (
               <div key={app.id} className="bg-[#1a1a1a] rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 hover:border-white/20">
-                <div onClick={() => toggleExpand(app.id)} className="p-6 cursor-pointer hover:bg-white/5 transition-all flex items-center justify-between gap-6">
-                  <div className="flex items-center gap-5 flex-1">
-                    <div className="w-14 h-14 rounded-full border border-black/20 flex items-center justify-center text-2xl font-bold text-white shadow-lg">{app.full_name?.[0] || "C"}</div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">{app.full_name || "Name not provided"}</h3>
-                      <div className="text-sm text-gray-400 space-y-1 mt-1">
+                <div onClick={() => toggleExpand(app.id)} className="p-4 cursor-pointer hover:bg-white/5 transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-6 lg:gap-6">
+                  <div className="flex items-center gap-4 flex-1 w-full">
+                    <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full border border-black/20 flex items-center justify-center text-xl lg:text-2xl font-bold text-white shadow-lg flex-shrink-0">{app.full_name?.[0] || "C"}</div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg lg:text-xl font-bold text-white truncate">{app.full_name || "Name not provided"}</h3>
+                      <div className="text-sm lg:text-sm text-gray-400 space-y-0.5 mt-1">
                         <p><span className="text-gray-500">Applied For:</span> <strong className="text-gray-300">{app.applied_job_title}</strong></p>
                         <p><span className="text-gray-500">Company:</span> {app.applied_company_name}</p>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className={`px-4 py-2 rounded-full text-white font-bold text-sm ${currentStatus.color}`}>{currentStatus.label}</div>
-                    <div className="text-right text-sm text-gray-400">
-                      <p>Applied On</p>
-                      <p className="font-medium text-white">{app.applied_at_formatted || new Date(app.applied_at).toLocaleDateString()}</p>
+                  <div className="flex items-center justify-between lg:justify-end gap-6 w-full lg:w-auto mt-3 lg:mt-0">
+                    <div className="flex items-center gap-4">
+                      <div className={`px-4 py-1.5 lg:px-4 lg:py-2 rounded-full text-white font-bold text-sm ${currentStatus.color}`}>{currentStatus.label}</div>
+                      <div className="text-left text-sm text-gray-400">
+                        <p>Applied On</p>
+                        <p className="font-medium text-white">{app.applied_at_formatted || new Date(app.applied_at).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                    <div className="text-3xl text-gray-500 transition-transform duration-300" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>↓</div>
+                    <div className="hidden lg:block text-3xl text-gray-500 transition-transform duration-300" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>↓</div>
                   </div>
                 </div>
                 {isExpanded && (
@@ -148,7 +150,7 @@ function Evaluate() {
                     <div className="mt-8 flex flex-wrap gap-4 justify-center pt-6 border-t border-white/10">
                       {app.linkedin && <a href={app.linkedin} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">LinkedIn</a>}
                       {app.portfolio && <a href={app.portfolio} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">Portfolio</a>}
-                      {resume?.file ? <a href={`https://jobchahiye.vercel.app/${resume.file}`} target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">Download Resume</a> : <span className="px-8 py-3 text-gray-500">No resume uploaded</span>}
+                      {resume?.file ? (<a  href={resume.file.startsWith('http') ? resume.file : `https://jobchahiye.vercel.app${resume.file}`} target="_blank"  rel="noopener noreferrer"  className="px-8 py-3 bg-black text-white border border-white/10 shadow cursor-pointer hover:shadow-lg transition-shadow rounded-xl font-bold">View / Download Resume</a>) : (<span className="px-8 py-3 text-gray-500">No resume uploaded</span>)}
                     </div>
                   </div>
                 )}
