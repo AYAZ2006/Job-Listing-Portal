@@ -1,5 +1,5 @@
 import React, { useState,useRef,useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link ,useLocation} from "react-router-dom";
 import { User, Edit3, ListChecks, Star, Settings, Phone, LogOut, Bell } from "lucide-react";
 import axios from "axios";
 export default function CNavbar() {
@@ -8,6 +8,7 @@ export default function CNavbar() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
   const email = localStorage.getItem("user_email");
   const username = localStorage.getItem("username");
   const logout = () => { localStorage.removeItem("user_type"); localStorage.removeItem("user_email"); localStorage.removeItem("username");navigate("/candidate-login");};
@@ -25,6 +26,10 @@ export default function CNavbar() {
     if (!openNotifications) return;
     axios.get(`https://jobchahiye.vercel.app/candidate/notifications/?email=${email}`).then((res) => setNotifications(res.data)).catch((err) => console.error(err));
   }, [openNotifications]);
+  useEffect(() => {
+    setOpenPanel(false);
+    setOpenNotifications(false);
+  }, [location.pathname]);
   useEffect(() => {
     setUnreadCount(notifications.filter(n => !n.is_read).length);
   }, [notifications]);
