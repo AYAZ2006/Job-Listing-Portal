@@ -11,11 +11,11 @@ export default function CNavbar() {
   const email = localStorage.getItem("user_email");
   const username = localStorage.getItem("username");
   const logout = () => { localStorage.removeItem("user_type"); localStorage.removeItem("user_email"); localStorage.removeItem("username");navigate("/candidate-login");};
-  const panelRef = useRef(null);
+  const panelWrapperRef = useRef(null);
   const notifRef = useRef(null);
   useEffect(() => {
     function handleClick(e) {
-      if (panelRef.current && !panelRef.current.contains(e.target)) setOpenPanel(false);
+      if (panelWrapperRef.current && !panelWrapperRef.current.contains(e.target)) setOpenPanel(false);
       if (notifRef.current && !notifRef.current.contains(e.target)) setOpenNotifications(false);
     }
     document.addEventListener("mousedown", handleClick);
@@ -81,34 +81,37 @@ export default function CNavbar() {
             <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User" className="w-full h-full object-cover"/>
           </div>
         </div>
-        <button className="lg:hidden text-white text-2xl" onClick={() => setOpenPanel(!openPanel)} >{openPanel ? "✕" : "☰"}</button>
-      </div>
-      {openPanel && (
-        <div ref={panelRef} className="absolute right-6 top-16 w-64 bg-[#0f0f0f] text-white rounded-2xl shadow-2xl p-5 space-y-4 z-[999] border border-white/10">
-          <div className="flex items-center gap-4">
-            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User" className="w-14 h-14 rounded-full object-cover border border-white/20"/>
-            <div>
-              <div className="font-semibold">{username}</div>
-              <div className="text-xs sm:text-sm opacity-60 break-all">{email}</div>
+
+        <div ref={panelWrapperRef}>
+          <button className="lg:hidden text-white text-2xl" onClick={() => setOpenPanel(prev => !prev)}>{openPanel ? "✕" : "☰"}</button>
+          {openPanel && (
+            <div className="absolute right-6 top-16 w-64 bg-[#0f0f0f] text-white rounded-2xl shadow-2xl p-5 space-y-4 z-[999] border border-white/10">
+              <div className="flex items-center gap-4">
+                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="User" className="w-14 h-14 rounded-full object-cover border border-white/20"/>
+                <div>
+                  <div className="font-semibold">{username}</div>
+                  <div className="text-xs sm:text-sm opacity-60 break-all">{email}</div>
+                </div>
+              </div>
+              <button className="w-full py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition flex items-center justify-center gap-2 cursor-pointer" onClick={()=>navigate('/settings')}><Edit3 size={16}/>Edit</button>
+              <hr className="border-white/10"/>
+              <div className="flex flex-col text-sm gap-1.5 lg:hidden">
+                <Link to="/home" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition">Home</Link>
+                <Link to="/internships" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition">Internships</Link>
+                <Link to="/jobs" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition">Jobs</Link>
+                <hr className="border-white/10"/>
+              </div>
+              <div className="flex flex-col text-sm gap-1.5">
+                <Link to="/applications" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><ListChecks size={16}/>Registrations / Applications</Link>
+                <Link to="/watchlist" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><Star size={16}/>Watchlist</Link>
+                <Link to="/settings" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><Settings size={16}/>Settings</Link>
+                <Link to="/contact" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><Phone size={16}/>Contact Us</Link>
+              </div>
+              <button onClick={logout} className="w-full mt-3 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition flex items-center justify-center gap-2 cursor-pointer"><LogOut size={16}/>Logout</button>
             </div>
-          </div>
-          <button className="w-full py-2 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition flex items-center justify-center gap-2 cursor-pointer" onClick={()=>navigate('/settings')}><Edit3 size={16}/>Edit</button>
-          <hr className="border-white/10"/>
-          <div className="flex flex-col text-sm gap-1.5 lg:hidden">
-            <Link to="/home" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition">Home</Link>
-            <Link to="/internships" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition">Internships</Link>
-            <Link to="/jobs" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition">Jobs</Link>
-            <hr className="border-white/10"/>
-          </div>
-          <div className="flex flex-col text-sm gap-1.5">
-            <Link to="/applications" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><ListChecks size={16}/>Registrations / Applications</Link>
-            <Link to="/watchlist" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><Star size={16}/>Watchlist</Link>
-            <Link to="/settings" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><Settings size={16}/>Settings</Link>
-            <Link to="/contact" className="flex items-center gap-2 py-2 px-2 rounded-lg hover:bg-white/10 transition"><Phone size={16}/>Contact Us</Link>
-          </div>
-          <button onClick={logout} className="w-full mt-3 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm transition flex items-center justify-center gap-2 cursor-pointer"><LogOut size={16}/>Logout</button>
+          )}
         </div>
-      )}
+      </div>
     </nav>
   );
 }
