@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link ,useLocation} from "react-router-dom";
 import {Home,Edit3,ListChecks,FolderCog,MessageSquare,Bell,LogOut,Settings,Phone,Star} from "lucide-react";
 import axios from "axios";
 
@@ -9,6 +9,7 @@ export default function AdminNavbar() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
   const email = localStorage.getItem("user_email");
   const username = localStorage.getItem("username");
   const panelRef = useRef(null);
@@ -38,6 +39,11 @@ export default function AdminNavbar() {
   useEffect(() => {
     setUnreadCount(notifications.filter((n) => !n.is_read).length);
   }, [notifications]);
+  
+  useEffect(() => {
+    setOpenPanel(false);
+    setOpenNotifications(false);
+  }, [location.pathname]);
 
   function markNotificationAsRead(id) {
     setNotifications((prev) =>prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
@@ -49,10 +55,7 @@ export default function AdminNavbar() {
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
         <div className="text-xl font-bold text-white">JobPortal</div>
         <div className="hidden lg:block relative w-full max-w-sm lg:ml-10">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full px-4 py-2 rounded-full bg-black text-white focus:outline-none"/>
+          <input type="text" placeholder="Search..." className="w-full px-4 py-2 rounded-full bg-black text-white focus:outline-none"/>
           <button className="absolute right-2 top-1/2 -translate-y-1/2">🔍</button>
         </div>
         <ul className="hidden lg:flex items-center gap-4">
@@ -62,9 +65,7 @@ export default function AdminNavbar() {
           <Link to="/manage" className="flex items-center gap-2 py-2 px-4 hover:bg-white/20 rounded-full text-white/80">Manage</Link>
           <Link to="/messages" className="flex items-center gap-2 py-2 px-4 hover:bg-white/20 rounded-full text-white/80"><MessageSquare size={18} /></Link>
           <li className="relative">
-            <div
-              onClick={() => setOpenNotifications(!openNotifications)}
-              className="relative cursor-pointer flex items-center gap-2 py-2 px-4 hover:bg-white/20 rounded-full text-white/80">
+            <div onClick={() => setOpenNotifications(!openNotifications)} className="relative cursor-pointer flex items-center gap-2 py-2 px-4 hover:bg-white/20 rounded-full text-white/80">
               <Bell size={20} />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] px-1 rounded-full">{unreadCount}</span>
